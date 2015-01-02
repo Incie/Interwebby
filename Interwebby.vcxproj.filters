@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\tinyxml-2">
+      <UniqueIdentifier>{4cc41e4d-5656-49d9-91f5-62b0667bfc1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MainFrame">
+      <UniqueIdentifier>{30785757-8aa0-4769-b236-7f846e59aec5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\NewDialog">
+      <UniqueIdentifier>{8745c11b-23fd-49d1-8dd2-40628420a998}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SettingsDialog">
+      <UniqueIdentifier>{26d64d5e-a3b4-45ad-a07c-d278b13f9ff8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ListInterface">
+      <UniqueIdentifier>{291c97ac-457b-4d53-be51-f05cadd29bba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DateTime">
+      <UniqueIdentifier>{bf15f822-3b94-43b1-9b4b-cf0505eced3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\File">
+      <UniqueIdentifier>{f432d417-573b-454f-a4cd-b00ce6a5adcf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Entry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tinyxml2.cpp">
+      <Filter>Source Files\tinyxml-2</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MainFrame.cpp">
+      <Filter>Source Files\MainFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MainFrame_data.cpp">
+      <Filter>Source Files\MainFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MainFrame_events.cpp">
+      <Filter>Source Files\MainFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NewDialog.cpp">
+      <Filter>Source Files\NewDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MainFrame_notebook.cpp">
+      <Filter>Source Files\MainFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SettingsDialog.cpp">
+      <Filter>Source Files\SettingsDialog</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ListInterface.cpp">
+      <Filter>Source Files\ListInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\List.cpp">
+      <Filter>Source Files\ListInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DateTime.cpp">
+      <Filter>Source Files\DateTime</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ColumnSettings.cpp">
+      <Filter>Source Files\ListInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="src\File.cpp">
+      <Filter>Source Files\File</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\tinyxml2.h">
+      <Filter>Source Files\tinyxml-2</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MainFrame.h">
+      <Filter>Source Files\MainFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NewDialog.h">
+      <Filter>Source Files\NewDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SettingsDialog.h">
+      <Filter>Source Files\SettingsDialog</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ListInterface.h">
+      <Filter>Source Files\ListInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DataEntry.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\List_objects.h">
+      <Filter>Source Files\ListInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DateTime.h">
+      <Filter>Source Files\DateTime</Filter>
+    </ClInclude>
+    <ClInclude Include="src\File.h">
+      <Filter>Source Files\File</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
