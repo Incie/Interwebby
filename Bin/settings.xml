@@ -6,7 +6,7 @@
         <column name="Date Added" width="125" enabled="0"/>
         <column name="Launched" width="100" enabled="1"/>
     </columns>
-    <data-path>C:\Users\vyptop\Dropbox\Interwebby\data.xml</data-path>
+    <data-path>data.xml</data-path>
     <window WinX="279" WinY="48" WinW="923" WinH="637" Maximized="0"/>
     <colours>
         <launch-text Red="47" Green="243" Blue="12"/>

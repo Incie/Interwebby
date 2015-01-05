@@ -1,0 +1,69 @@
+Compiled and developed using Visual Studio 2010
+wxVERSION_NUMBER equals 2.9.4 for current release
+
+This file contains a summary of changed project settings
+
+
+Memory leaks tracked with VLD (Visual Leak Detector), and is enabled by preprocessor defines in Entry.cpp.
+
+
+Notable OS [Windows] Setup:
+I have one directory where I put SDKs. I have a dedicated SDK folder in my Project collection. 
+This is where I extract and compile external libraries like wxWidgets.
+I created an environmentvariable called SDK_PATH which points to [Drive]:\Projects\SDK\
+
+This environmentvariable is there to enable easier sharing of project between machines.
+
+
+Build Settings
+--------------
+
+Debug Build
+
+Configuration Properties
+- General
+-- Output Directory: $(SolutionDir)Bin\
+-- Target Name: Interwebby_dbg
+-- Character Set: Use Unicode Character Set
+- Debugging
+-- Working Directory: $(SolutionDir)Bin\
+
+- C/C++
+-- General
+--- Additional Include Directories: $(SDK_PATH)\wxWidgets\include\;$(SDK_PATH)\wxWidgets\include\msvc\;$(SDK_PATH)\include
+--- Warning Level: Level 4 (/W4)
+-- Preprocessor
+--- Preprocessor Defines: WIN32;WXDEBUG;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)
+
+- Linker
+-- General
+--- Additional Library Directories: $(SDK_PATH)\wxWidgets\lib\vc_lib;$(SDK_PATH)\lib
+-- Input
+--- Additional Dependencies: kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;advapi32.lib;shell32.lib;%(AdditionalDependencies)
+
+
+
+Release Build
+
+Configuration Properties
+- General
+-- Output Directory: $(SolutionDir)Bin\
+-- Target Name: Interwebby
+-- Character Set: Use Unicode Character Set
+- Debugging
+-- Working Directory: $(SolutionDir)Bin\
+
+- C/C++
+-- General
+--- Additional Include Directories: $(SDK_PATH)wxWidgets\include\;$(SDK_PATH)wxWidgets\include\msvc\
+--- Warning Level: Level 4 (/W4)
+-- Preprocessor
+--- Preprocessor Defines: WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)
+
+- Linker
+-- General
+--- Additional Library Directories: $(SDK_PATH)wxWidgets\lib\vc_lib
+-- Input
+--- Additional Dependencies: kernel32.lib;user32.lib;gdi32.lib;comdlg32.lib;advapi32.lib;shell32.lib;%(AdditionalDependencies)
+
+
