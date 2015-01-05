@@ -19,19 +19,19 @@ NewDialog::NewDialog(wxWindow *parent, const wxArrayString &groupList, const NDL
 	SetClientSize(400, 20 * 3 * 2 + 52 );
 	mainpanel = new wxPanel(this, wxID_ANY, wxPoint(0,0), GetClientSize());
 
-
 	szname = new wxStaticText(mainpanel, wxID_ANY, wxT("Name"), wxPoint(5,5) );
 	name = new wxTextCtrl(mainpanel, wxID_ANY, wxEmptyString, wxPoint(5,20), wxSize(390, 20), wxTE_PROCESS_ENTER);
 
 	szdesc = new wxStaticText(mainpanel, wxID_ANY, wxT("Desc"), wxPoint(5,50) );
 	desc = new wxTextCtrl(mainpanel, wxID_ANY, wxEmptyString, wxPoint(5,65), wxSize(390, 20), wxTE_PROCESS_ENTER);
 
-	xbtn = new wxButton(desc, wxID_ANY, wxT("X"), wxPoint(370,0), wxSize(20,20));
+	xbtn = new wxButton(desc, wxID_ANY, wxT("X"), wxPoint(368,1), wxSize(20,16), wxBORDER_NONE);
 	xbtn->SetBackgroundColour(desc->GetBackgroundColour());
 	xbtn->SetForegroundColour(wxColour(255,25,10));
 
+
 	szgroups = new wxStaticText(mainpanel, wxID_ANY, wxT("Select a Group"), wxPoint(5,50) );
-	groups = new wxComboBox(mainpanel, wxID_ANY, wxEmptyString, wxPoint(5,50+szgroups->GetSize().y), wxSize(390, 20), groupList, wxTE_PROCESS_ENTER|wxCB_READONLY);
+	groups = new wxComboBox(mainpanel, wxID_ANY, wxEmptyString, wxPoint(5,50+szgroups->GetSize().y), wxSize(390, 24), groupList, wxTE_PROCESS_ENTER|wxCB_READONLY);
 
 	szurl = new wxStaticText(mainpanel, wxID_ANY, wxT("URL"), wxPoint(5,95) );
 	url = new wxTextCtrl(mainpanel, wxID_ANY, wxEmptyString, wxPoint(5,110), wxSize(390, 20), wxTE_PROCESS_ENTER);
