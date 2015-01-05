@@ -84,9 +84,8 @@ int MainFrame::UpdateEntryProc()
 
 	if( dlg.ShowModal() == ID_YES )
 	{
-		DataEntry updatedEntry;
+		DataEntry updatedEntry(*currentEntry);
 		dlg.GetEntry(updatedEntry);
-
 
 		if( updatedEntry.GetGroup().compare(currentEntry->GetGroup()) == 0 )
 		{
@@ -267,7 +266,7 @@ bool MainFrame::SaveData()
 }
 
 
-void AssignXMLColour(XMLElement *element, wxColour &colour)
+void GetXMLColour(const XMLElement *element, wxColour &colour)
 {
 	if( element )
 	{
@@ -381,13 +380,13 @@ void MainFrame::LoadSettings()
 		ListColours colours;
 		listinterface.GetColours(colours);
 
-		AssignXMLColour(launch_text, colours.rgbLaunchedText);
-		AssignXMLColour(launch_bg, colours.rgbLaunchedTextBg);
-		AssignXMLColour(bg, colours.rgbBackground);
-		AssignXMLColour(normal_text, colours.rgbNormalText);
-		AssignXMLColour(normal_bg, colours.rgbNormalTextBg);
-		AssignXMLColour(filter_text, colours.rgbFilteredText);
-		AssignXMLColour(filter_bg, colours.rgbFilteredBg);
+		GetXMLColour(launch_text, colours.rgbLaunchedText);
+		GetXMLColour(launch_bg, colours.rgbLaunchedTextBg);
+		GetXMLColour(bg, colours.rgbBackground);
+		GetXMLColour(normal_text, colours.rgbNormalText);
+		GetXMLColour(normal_bg, colours.rgbNormalTextBg);
+		GetXMLColour(filter_text, colours.rgbFilteredText);
+		GetXMLColour(filter_bg, colours.rgbFilteredBg);
 
 		listinterface.SetColours(colours);
 	}

@@ -155,3 +155,5 @@ UpgradeLog*.htm
 *.bim_*.settings
 # Microsoft Fakes
 FakesAssemblies/
+Bin/data.xml
+Bin/settings.xml
