@@ -10,9 +10,9 @@
 #include<wx/menu.h>
 
 #ifdef _DEBUG
-#define TITLESTRING wxT("Interwebby (Beta 7 Debugbuild) ")
+#define TITLESTRING wxT("Interwebby 1.0.1 (Debugbuild) ")
 #else
-#define TITLESTRING wxT("Interwebby (Beta 7)")
+#define TITLESTRING wxT("Interwebby 1.0.1")
 #endif
 
 wxButton* MainFrame::AddButton(wxWindow* parent, const wxString& title, const wxPoint& position, const wxSize& size, wxObjectEventFunction func, bool isShown)
