@@ -127,7 +127,10 @@ void MainFrame::OnButtonExpand(wxCommandEvent&)
 	if( bExpandButtons )
 	{
 		expandBtn->SetLabel(wxT("<<"));
-		expandBtn->SetPosition(wxPoint(750, 5));
+
+		wxPoint newPosition = entryDownBtn->GetPosition() + wxPoint(3,0);
+		newPosition.x += entryDownBtn->GetSize().x;
+		expandBtn->SetPosition(newPosition);
 
 		modBtn->Show();
 		delBtn->Show();
@@ -150,7 +153,7 @@ void MainFrame::OnButtonExpand(wxCommandEvent&)
 	entryDownBtn->Show(false);
 
 	expandBtn->SetLabel(wxT(">>"));
-	expandBtn->SetPosition(wxPoint(150, 5));
+	expandBtn->SetPosition(newBtn->GetPosition());
 }
 
 void MainFrame::OnClose(wxCloseEvent &evt)

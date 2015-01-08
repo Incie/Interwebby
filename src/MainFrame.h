@@ -15,13 +15,15 @@ class wxStaticText;
 class wxMenuBar;
 class DataEntry;
 
+struct ButtonData;
+
 class MainFrame : public wxFrame
 {
 public:
 	MainFrame();
 
 private:
-	wxButton* AddButton(wxWindow* parent, const wxString& title, const wxPoint& position, const wxSize& size, wxObjectEventFunction func, bool isShown = true);
+	wxButton* AddButton(wxWindow* parent, const wxPoint &position, const ButtonData &data);
 	void OnChar(wxKeyEvent &evt);
 	void OnButtonDelete(wxCommandEvent &evt);
 	void OnButtonLaunch(wxCommandEvent &evt);
