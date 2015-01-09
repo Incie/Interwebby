@@ -200,10 +200,8 @@ void MainFrame::LoadData()
 
 XMLElement* CreateElement(XMLDocument &document, const char* elementName, const wxString& data)
 {
-	const char* strName = data.mb_str(wxConvUTF8);
-
 	XMLElement *element = document.NewElement(elementName);
-	XMLText *nameText = document.NewText(strName);
+	XMLText *nameText = document.NewText((const char*)data.mb_str(wxConvUTF8)); 
 	element->LinkEndChild(nameText);
 
 	return element;
