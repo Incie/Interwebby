@@ -32,14 +32,14 @@ struct ButtonData
 
 wxButton* MainFrame::AddButton(wxWindow* parent, const wxPoint &position, const ButtonData &data)
 {
-	wxButton *btn = new wxButton(parent, wxID_ANY, data.title, position);
+	wxButton *btn = new wxButton(parent, wxID_ANY, data.title, position );
 
-	//testing getting string-width
+	//testing getting text size
 	wxClientDC dc(btn);
 	dc.SetFont( btn->GetFont() );
 	wxSize stringsize = dc.GetTextExtent( data.title );
 
-	btn->SetSize(wxSize(stringsize.x + 12, 20));
+	btn->SetSize(wxSize(stringsize.x + 12, stringsize.y + 7));
 
 	if( btn )
 	{
@@ -112,7 +112,7 @@ MainFrame::MainFrame() : wxFrame(0, wxID_ANY, TITLESTRING)
 	Connect(wxEVT_SIZE, wxSizeEventHandler(MainFrame::OnResize));
 
 	CreateStatusBar(1);
-	InitNotebook();
+	InitNotebook( wxPoint(0, newBtn->GetPosition().y + newBtn->GetSize().y + 5) );
 	LoadDefaultSettings();
 	LoadSettings();
 	LoadData();

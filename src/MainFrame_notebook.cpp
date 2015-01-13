@@ -6,9 +6,9 @@
 #include<wx/notebook.h>
 #include"DataEntry.h"
 
-void MainFrame::InitNotebook()
+void MainFrame::InitNotebook(const wxPoint &position)
 {
-	nb = new wxNotebook(mainPanel, wxID_ANY, wxPoint(0,30), wxSize(800, 270), wxNB_TOP );
+	nb = new wxNotebook(mainPanel, wxID_ANY, position, wxSize(800, 270), wxNB_TOP );
 }
 
 void MainFrame::MoveTab(int direction)

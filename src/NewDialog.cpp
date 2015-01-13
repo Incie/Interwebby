@@ -9,6 +9,15 @@
 
 #include<wx/msgdlg.h>
 
+wxPoint GetNextPosition( const wxWindow* win, const wxSize &padding )
+{
+	wxPoint nextposition = win->GetPosition();
+	nextposition.y += win->GetSize().y;
+	nextposition += padding;
+	
+	return nextposition;
+}
+
 NewDialog::NewDialog(wxWindow *parent, const wxArrayString &groupList, const NDLMode mode) : wxDialog(parent, wxID_ANY, wxT("New..."), wxDefaultPosition, wxDefaultSize, (wxSYSTEM_MENU |  wxCAPTION | wxCLIP_CHILDREN | wxCLOSE_BOX) )
 {
 	Center();
@@ -16,25 +25,27 @@ NewDialog::NewDialog(wxWindow *parent, const wxArrayString &groupList, const NDL
 	if( mode == NDL_MODE_EDIT ) 
 		SetTitle(wxT("Modify.."));
 
-	SetClientSize(400, 20 * 3 * 2 + 52 );
+	wxSize padSmall(0,3);
+	wxSize pad(0,9);
+
 	mainpanel = new wxPanel(this, wxID_ANY, wxPoint(0,0), GetClientSize());
 
 	szname = new wxStaticText(mainpanel, wxID_ANY, wxT("Name"), wxPoint(5,5) );
-	name = new wxTextCtrl(mainpanel, wxID_ANY, wxEmptyString, wxPoint(5,20), wxSize(390, 20), wxTE_PROCESS_ENTER);
+	name = new wxTextCtrl(mainpanel, wxID_ANY, wxEmptyString, GetNextPosition(szname, padSmall) , wxSize(390, 20), wxTE_PROCESS_ENTER);
 
-	szdesc = new wxStaticText(mainpanel, wxID_ANY, wxT("Desc"), wxPoint(5,50) );
-	desc = new wxTextCtrl(mainpanel, wxID_ANY, wxEmptyString, wxPoint(5,65), wxSize(390, 20), wxTE_PROCESS_ENTER);
+	szdesc = new wxStaticText(mainpanel, wxID_ANY, wxT("Desc"), GetNextPosition(name, pad));
+	desc = new wxTextCtrl(mainpanel, wxID_ANY, wxEmptyString, GetNextPosition(szdesc, padSmall), wxSize(390, 20), wxTE_PROCESS_ENTER);
 
 	xbtn = new wxButton(desc, wxID_ANY, wxT("X"), wxPoint(368,1), wxSize(20,16), wxBORDER_NONE);
 	xbtn->SetBackgroundColour(desc->GetBackgroundColour());
 	xbtn->SetForegroundColour(wxColour(255,25,10));
 
 
-	szgroups = new wxStaticText(mainpanel, wxID_ANY, wxT("Select a Group"), wxPoint(5,50) );
-	groups = new wxComboBox(mainpanel, wxID_ANY, wxEmptyString, wxPoint(5,50+szgroups->GetSize().y), wxSize(390, 24), groupList, wxTE_PROCESS_ENTER|wxCB_READONLY);
+	szgroups = new wxStaticText(mainpanel, wxID_ANY, wxT("Select a Group"), GetNextPosition(name, pad) );
+	groups = new wxComboBox(mainpanel, wxID_ANY, wxEmptyString, GetNextPosition(szdesc, padSmall), wxSize(390, 24), groupList, wxTE_PROCESS_ENTER|wxCB_READONLY);
 
-	szurl = new wxStaticText(mainpanel, wxID_ANY, wxT("URL"), wxPoint(5,95) );
-	url = new wxTextCtrl(mainpanel, wxID_ANY, wxEmptyString, wxPoint(5,110), wxSize(390, 20), wxTE_PROCESS_ENTER);
+	szurl = new wxStaticText(mainpanel, wxID_ANY, wxT("URL"), GetNextPosition(groups, pad) );
+	url = new wxTextCtrl(mainpanel, wxID_ANY, wxEmptyString, GetNextPosition(szurl, padSmall), wxSize(390, 20), wxTE_PROCESS_ENTER);
 
 	url->SetValue( wxT("http://") );
 
@@ -50,16 +61,25 @@ NewDialog::NewDialog(wxWindow *parent, const wxArrayString &groupList, const NDL
 	newGroupString = wxT("New group...");
 	groups->Append(newGroupString);
 
-	ok = new wxButton(mainpanel, wxID_ANY, wxT("Ok"), wxPoint(400 - 140, 145), wxSize(70,20) );
-	cancel = new wxButton(mainpanel, wxID_ANY, wxT("Cancel"), wxPoint(400 - 70, 145), wxSize(70,20) );
-	
+	//Buttons
+	wxPoint buttonPosition = GetNextPosition(url, wxSize(0,12));
+	ok = new wxButton(mainpanel, wxID_ANY, wxT("Ok"), wxPoint(400 - 140, buttonPosition.y), wxSize(70,20) );
+	cancel = new wxButton(mainpanel, wxID_ANY, wxT("Cancel"), wxPoint(400 - 70, buttonPosition.y), wxSize(70,20) );
+
 	more = 0;
 	if( mode == NDL_MODE_NEW )
 	{
-		more = new wxButton(mainpanel, wxID_ANY, wxT("Ok+"), wxPoint(400 - 210, 145), wxSize(70,20) );
+		more = new wxButton(mainpanel, wxID_ANY, wxT("Ok+"), wxPoint(400 - 210, buttonPosition.y), wxSize(70,20) );
 		Connect(more->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(NewDialog::OnButton) );
 	}
 
+	//ClientSize
+	wxSize clientSize;
+	clientSize.x = 400;
+	clientSize.y = cancel->GetSize().y + cancel->GetPosition().y + 5;
+	SetClientSize(clientSize);
+
+	//Events
 	Connect(groups->GetId(), wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler(NewDialog::OnCombo) );
 
 	Connect(xbtn->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(NewDialog::OnButton) );

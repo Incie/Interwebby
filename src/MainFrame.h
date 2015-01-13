@@ -56,7 +56,7 @@ private:
 
 	wxString GetSelectedDesc();
 
-	void InitNotebook();
+	void InitNotebook(const wxPoint &position);
 	void MoveTab(int direction);
 	bool GenerateGroupList( wxArrayString &groupList );
 	wxListCtrl* AddNewTab( const wxString &name, int insertIndex = -1 );

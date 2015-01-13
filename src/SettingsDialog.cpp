@@ -20,10 +20,16 @@ SettingsDialog::SettingsDialog(wxWindow *parent)
 
 	panelMain = new wxPanel(this, wxID_ANY, wxPoint(0,0), clientSize);
 
+	//Paths
 	parentPaths   = new wxStaticBox(panelMain, wxID_ANY, wxT("Paths"), wxPoint(5,5), wxSize(490, 75));
+	stPath = new wxStaticText(parentPaths, wxID_ANY, wxT("C:/"), wxPoint(10,25));
+	wxButton *buttonSetPath = new wxButton(parentPaths, wxID_ANY, wxT("Set Data Path"), wxPoint(10,45), wxSize(75,20));
+
+	Connect(buttonSetPath->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(SettingsDialog::OnButtonSetPath));
+
+
+	//ColourBox
 	parentColours = new wxStaticBox(panelMain, wxID_ANY, wxT("Colours"), wxPoint(5,85), wxSize(240, 150));
-	parentColumns = new wxStaticBox(panelMain, wxID_ANY, wxT("Columns"), wxPoint(255,85), wxSize(240,50));
-	
 	wxStaticText *stColourPicker = new wxStaticText(parentColours, wxID_ANY, wxT("Set Colour:"), wxPoint(10, 25));
 	wxColourPickerCtrl *colour = new wxColourPickerCtrl(parentColours, wxID_ANY, wxColour(0,0,0), wxPoint(10 + stColourPicker->GetSize().x, 19), wxDefaultSize);
 	Connect(colour->GetId(), wxEVT_COMMAND_COLOURPICKER_CHANGED, wxCommandEventHandler(SettingsDialog::OnColour));
@@ -36,31 +42,32 @@ SettingsDialog::SettingsDialog(wxWindow *parent)
 	staticTexts.push_back(new wxStaticText(parentColours, wxID_ANY, wxT(" Filtered Text "), wxPoint(25,startHeight + textHeight * 2)));
 	staticTexts.push_back(new wxStaticText(parentColours, wxID_ANY, wxT(" Background    "), wxPoint(25,startHeight + textHeight * 3)));
 
-	radioButtons.push_back(new wxRadioButton(parentColours, wxID_ANY, wxT(""), wxPoint(10,startHeight), wxDefaultSize, wxRB_GROUP));
-	radioButtons.push_back(new wxRadioButton(parentColours, wxID_ANY, wxT(""), wxPoint(10,startHeight + textHeight)));
-	radioButtons.push_back(new wxRadioButton(parentColours, wxID_ANY, wxT(""), wxPoint(10,startHeight + textHeight*2)));
-	radioButtons.push_back(new wxRadioButton(parentColours, wxID_ANY, wxT(""), wxPoint(10,startHeight + textHeight*3)));
+	radioButtons.push_back(new wxRadioButton(parentColours, wxID_ANY, wxEmptyString, wxPoint(10,startHeight), wxDefaultSize, wxRB_GROUP));
+	radioButtons.push_back(new wxRadioButton(parentColours, wxID_ANY, wxEmptyString, wxPoint(10,startHeight + textHeight)));
+	radioButtons.push_back(new wxRadioButton(parentColours, wxID_ANY, wxEmptyString, wxPoint(10,startHeight + textHeight*2)));
+	radioButtons.push_back(new wxRadioButton(parentColours, wxID_ANY, wxEmptyString, wxPoint(10,startHeight + textHeight*3)));
 
 	//checkbox for uniform background 
 	checkUniformBG = new wxCheckBox(parentColours, wxID_ANY, wxT("Uniform Background"), wxPoint(10, 50));
 
 	//radiobuttons for selecting foreground or background
-	radioFG = new wxRadioButton(parentColours, wxID_ANY, wxT("Set Fackground"), wxPoint(150,startHeight), wxDefaultSize, wxRB_GROUP);
-	radioBG = new wxRadioButton(parentColours, wxID_ANY, wxT("Set Boreground"), wxPoint(150,startHeight + textHeight));
+	radioFG = new wxRadioButton(parentColours, wxID_ANY, wxT("Set Foreground"), wxPoint(120,startHeight), wxDefaultSize, wxRB_GROUP);
+	radioBG = new wxRadioButton(parentColours, wxID_ANY, wxT("Set Background"), wxPoint(120,startHeight + textHeight));
 
 	for( unsigned int i = 0; i < radioButtons.size(); ++i )
 		Connect(radioButtons[i]->GetId(), wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler(SettingsDialog::OnRadioButton));
 
-	//Paths
-	stPath = new wxStaticText(parentPaths, wxID_ANY, wxT("C:/"), wxPoint(10,25));
-	wxButton *buttonSetPath = new wxButton(parentPaths, wxID_ANY, wxT("Set Data Path"), wxPoint(10,45), wxSize(75,20));
 
-	Connect(buttonSetPath->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(SettingsDialog::OnButtonSetPath));
+	//ColumnBox
+	parentColumns = new wxStaticBox(panelMain, wxID_ANY, wxT("Columns"), wxPoint(255,85), wxSize(240,50));
+	/* Columns-checkboxes is added programmatically at runtime */
+
 
 	//Dialog Specific
 	wxSize buttonSize(75, 25);
-	wxButton *buttonOk = new wxButton(panelMain, wxID_ANY, wxT("OK"), wxPoint(80,clientSize.y - 30), buttonSize);
-	wxButton *buttonCancel = new wxButton(panelMain, wxID_ANY, wxT("Cancel"), wxPoint(160,clientSize.y - 30), buttonSize);
+	wxButton *buttonCancel = new wxButton(panelMain, wxID_ANY, wxT("Cancel"), wxPoint(clientSize.x - buttonSize.x - 5,clientSize.y - 30), buttonSize);
+	wxButton *buttonOk = new wxButton(panelMain, wxID_ANY, wxT("OK"), wxPoint(buttonCancel->GetPosition().x - buttonSize.x - 5,clientSize.y - 30), buttonSize);
+	
 
 	Connect(buttonOk->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(SettingsDialog::OnButtonOk));
 	Connect(buttonCancel->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(SettingsDialog::OnButtonCancel));
@@ -158,8 +165,7 @@ void SettingsDialog::SetColour( int index, const wxColour &colour, bool backgrou
 	if( background ) bgColour = colour;
 	else fgColour = colour;
 
-	//TODO? Set foreground as background is bool background = false ?
-	if( index == 3 ) //special case for the actual background 
+	if( index == 3 ) //special case for the actual list-background 
 		fgColour = wxColour( 255 - bgColour.Red(), 255 - bgColour.Green(), 255 - bgColour.Blue() );
 
 	text->SetForegroundColour(fgColour);
@@ -232,7 +238,6 @@ void SettingsDialog::OnCheck( wxCommandEvent &evt )
 
 	if( !checkbox )
 		return;
-
 
 	for( std::vector<column>::iterator it = columns.begin(); it != columns.end(); ++it )
 	{
