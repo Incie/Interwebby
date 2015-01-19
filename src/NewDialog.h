@@ -29,12 +29,18 @@ public:
 	NewDialog(wxWindow *parent, const wxArrayString &groups, const NDLMode mode = NDL_MODE_NEW);
 
 	void SetEntry( const DataEntry& entry );
-	void GetEntry( DataEntry &entry );
-	void SetSelectedGroup( const wxString &group );
+	void GetEntry( DataEntry &entry ) const;
+	void SetSelectedGroupAs( const wxString &group );
 
 private:
 	NewDialog() {}
-	void OnButton( wxCommandEvent &evt );
+
+	void OnButtonX(wxCommandEvent&);
+	void OnButtonOK(wxCommandEvent&);
+	void OnButtonOKPlus(wxCommandEvent&);
+	void OnButtonCancel(wxCommandEvent&);
+	void OnKeyEscape(wxCommandEvent&);
+
 	void OnShow( wxShowEvent &evt );
 	void OnEnter(wxCommandEvent&evt);
 	void OnClose(wxCloseEvent&evt);
@@ -59,7 +65,7 @@ private:
 	};
 
 	void SetGroupMode( NewDialog::GroupMode mode );
-	void GetGroup( wxString &string );
-	int FindGroupID( const wxString &group );
-	bool GroupExists( const wxString &group );
+	wxString GetGroup() const;
+	int FindGroupID( const wxString &group ) const;
+	bool GroupExists( const wxString &group ) const;
 };

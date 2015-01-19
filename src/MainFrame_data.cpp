@@ -132,6 +132,8 @@ bool MainFrame::NewData(const DataEntry &newEntry)
 	return listinterface.AddNewEntry(groupName, newEntry);
 }
 
+
+
 void MainFrame::LoadData()
 {
 	XMLDocument doc;
@@ -156,22 +158,22 @@ void MainFrame::LoadData()
 	{
 		DataEntry newEntry;
 		XMLElement *nam = column->FirstChildElement("name");
-		if( nam ) newEntry.SetName(nam->GetText());
+		if( nam ) newEntry.SetName( wxString::FromUTF8(nam->GetText()) );
 
 		XMLElement *des = column->FirstChildElement("desc");
-		if( des ) newEntry.SetGroup(des->GetText());
+		if( des ) newEntry.SetGroup(wxString::FromUTF8(des->GetText()));
 
 		XMLElement *url = column->FirstChildElement("url");
-		if( url ) newEntry.SetURL(url->GetText());
+		if( url ) newEntry.SetURL(wxString::FromUTF8(url->GetText()));
 
 		XMLElement *dat = column->FirstChildElement("date");
-		if( dat ) newEntry.SetDateLaunched(dat->GetText());
+		if( dat ) newEntry.SetDateLaunched(wxString::FromUTF8(dat->GetText()));
 
 		XMLElement *added = column->FirstChildElement("added");
-		if( added ) newEntry.SetDateAdded(added->GetText());
+		if( added ) newEntry.SetDateAdded(wxString::FromUTF8(added->GetText()));
 
 		XMLElement *launched = column->FirstChildElement("timeslaunched");
-		if( launched ) newEntry.SetTimesLaunched(launched->GetText());
+		if( launched ) newEntry.SetTimesLaunched(wxString::FromUTF8(launched->GetText()));
 
 		NewData(newEntry);
 
@@ -201,7 +203,7 @@ void MainFrame::LoadData()
 XMLElement* CreateElement(XMLDocument &document, const char* elementName, const wxString& data)
 {
 	XMLElement *element = document.NewElement(elementName);
-	XMLText *nameText = document.NewText((const char*)data.mb_str(wxConvUTF8)); 
+	XMLText *nameText = document.NewText((const char*)data.utf8_str()); 
 	element->LinkEndChild(nameText);
 
 	return element;

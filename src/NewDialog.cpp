@@ -70,7 +70,7 @@ NewDialog::NewDialog(wxWindow *parent, const wxArrayString &groupList, const NDL
 	if( mode == NDL_MODE_NEW )
 	{
 		more = new wxButton(mainpanel, wxID_ANY, wxT("Ok+"), wxPoint(400 - 210, buttonPosition.y), wxSize(70,20) );
-		Connect(more->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(NewDialog::OnButton) );
+		Connect(more->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(NewDialog::OnButtonOKPlus) );
 	}
 
 	//ClientSize
@@ -82,9 +82,9 @@ NewDialog::NewDialog(wxWindow *parent, const wxArrayString &groupList, const NDL
 	//Events
 	Connect(groups->GetId(), wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler(NewDialog::OnCombo) );
 
-	Connect(xbtn->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(NewDialog::OnButton) );
-	Connect(ok->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(NewDialog::OnButton) );
-	Connect(cancel->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(NewDialog::OnButton) );
+	Connect(xbtn->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(NewDialog::OnButtonX) );
+	Connect(ok->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(NewDialog::OnButtonOK) );
+	Connect(cancel->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(NewDialog::OnButtonCancel) );
 	Connect(wxEVT_SHOW, wxShowEventHandler(NewDialog::OnShow));
 	Connect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler(NewDialog::OnClose));
 
@@ -102,7 +102,7 @@ NewDialog::NewDialog(wxWindow *parent, const wxArrayString &groupList, const NDL
 
 void NewDialog::SetGroupMode( NewDialog::GroupMode mode )
 {
-	//The default is NewDialog::GROUP_COMBO when initialized
+	//Initialize as mode = NewDialog::GROUP_COMBO
 	bool textmode = false;
 	bool combomode = true;
 
@@ -116,28 +116,26 @@ void NewDialog::SetGroupMode( NewDialog::GroupMode mode )
 	szdesc->Show(textmode);
 	xbtn->Show(textmode);
 
-
 	groups->Show(combomode);
 	szgroups->Show(combomode);
 }
 
-void NewDialog::GetGroup( wxString &string )
+wxString NewDialog::GetGroup() const
 {
-	if( groups->IsShown() )
-	{
-		int selection = groups->GetSelection();
-		string = groups->GetString( selection );
-	}
-	else 
-		string = desc->GetValue();
+	//return Comboboxvalue?
+	if( groups->IsShown() ) 
+		return groups->GetString( groups->GetSelection() );
+	
+	//return TextBox value
+	return desc->GetValue();
 }
 
-int NewDialog::FindGroupID( const wxString &group )
+int NewDialog::FindGroupID( const wxString &group ) const
 {
 	return groups->FindString(group);
 }
 
-void NewDialog::SetSelectedGroup( const wxString &group )
+void NewDialog::SetSelectedGroupAs( const wxString &group )
 {
 	int index = FindGroupID(group);
 
@@ -152,7 +150,7 @@ void NewDialog::SetSelectedGroup( const wxString &group )
 	groups->Select(index);
 }
 
-bool NewDialog::GroupExists( const wxString &group )
+bool NewDialog::GroupExists( const wxString &group ) const
 {
 	return (FindGroupID(group) != wxNOT_FOUND);
 }
@@ -208,30 +206,31 @@ void NewDialog::OnShow( wxShowEvent& evt )
 		name->SetFocus();
 }
 
-void NewDialog::OnButton( wxCommandEvent& evt )
+void NewDialog::OnButtonX(wxCommandEvent&)
 {
-	if( evt.GetId() == xbtn->GetId() )
-	{
-		SetGroupMode(GROUP_COMBOBOX);
-		return;
-	}
+	//Todo: what happens if combobox is empty?
+	SetGroupMode(GROUP_COMBOBOX);
+}
 
-	int ID = ID_NO;
-	if( evt.GetId() == ok->GetId() )
-		ID = ID_YES;
+void NewDialog::OnButtonOK(wxCommandEvent&)
+{
+	EndModal(ID_YES);
+}
 
-	if( more != 0 && evt.GetId() == more->GetId() )
-	{
-		wxString groupname;
-		GetGroup(groupname);
+void NewDialog::OnButtonCancel(wxCommandEvent&)
+{
+	EndModal(ID_NO);
+}
 
-		if( !GroupExists(groupname) )
-			groups->Insert( groupname, groups->GetCount() - 1 );
+void NewDialog::OnButtonOKPlus(wxCommandEvent&)
+{
+	wxString groupname = GetGroup();
+	//This assumes the new entry will be added, and therefore new group will exist
+	//but this can fail if name already exists in the entrylist
+	if( !GroupExists(groupname) )
+		groups->Insert( groupname, groups->GetCount() - 1 );
 
-		ID = ID_YES_AND_MORE;
-	}
-
-	EndModal(ID);
+	EndModal(ID_YES_AND_MORE);
 }
 
 void NewDialog::SetEntry(const DataEntry& entry)
@@ -247,16 +246,15 @@ void NewDialog::SetEntry(const DataEntry& entry)
 	else
 	{
 		SetGroupMode(GROUP_COMBOBOX);
-		SetSelectedGroup(group);
+		SetSelectedGroupAs(group);
 	}
 }
 
-void NewDialog::GetEntry(DataEntry& entry)
+void NewDialog::GetEntry(DataEntry& entry) const
 {
 	entry.SetName( name->GetValue() );
 	entry.SetURL( url->GetValue() );
 
-	wxString group;
-	GetGroup(group);
+	wxString group = GetGroup();
 	entry.SetGroup(group);
 }

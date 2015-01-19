@@ -202,7 +202,7 @@ void MainFrame::OnButtonNew(wxCommandEvent&)
 	GenerateGroupList(groupList);
 
 	NewDialog dlg(this, groupList);
-	dlg.SetSelectedGroup(GetSelectedDesc());
+	dlg.SetSelectedGroupAs(GetSelectedDesc());
 
 	int retValue = ID_YES;
 	do
