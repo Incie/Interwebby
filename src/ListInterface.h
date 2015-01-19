@@ -4,6 +4,12 @@
 #include<wx/string.h>
 #include"List_objects.h"
 
+/** ListInterface **
+Handles the actual GUI lists, columns and the entry database.
+
+--> It was meant as a simple abstraction, but got a bit out of hand
+*/
+
 class DataEntry;
 class wxListCtrl;
 class wxSize;
@@ -14,8 +20,6 @@ class ListInterface
 public:
 	ListInterface();
 	~ListInterface();
-
-	wxString dbgGenerateEntryList();
 
 	//lists
 	int RegisterList( const wxString &name, wxListCtrl *list, int insertIndex = -1 );

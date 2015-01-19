@@ -1,8 +1,14 @@
 #pragma once
 
-
 #include<wx/dialog.h>
 #include<vector>
+
+/** SettingsDialog **
+Window for editing certain settings.
+> Where the data-file is saved/loaded
+> List Colours
+> Which columns are visible
+*/
 
 class wxButton;
 class wxPanel;

@@ -1,6 +1,11 @@
 #pragma once
 
 
+/** File **
+A simple interface for checking if the application has file-access.
+It abstracts wxFile.
+**/
+
 class wxString;
 
 class File

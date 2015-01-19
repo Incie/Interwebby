@@ -1,9 +1,12 @@
 #pragma once
 
-
 #include<wx/frame.h>
 #include<vector>
 #include"ListInterface.h"
+
+/** MainFrame **
+Object for handling the Main Window.
+*/
 
 class wxListCtrl;
 class wxButton;

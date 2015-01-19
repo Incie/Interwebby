@@ -2,6 +2,12 @@
 
 #include<wx/dialog.h>
 
+/** NewDialog **
+A window for adding or modifying DataEntries.
+It can set values for name, group and url. 
+The values for date added, date launched and times launched are handled when the individual actions they are executed.
+*/
+
 class wxButton;
 class wxTextCtrl;
 class wxStaticText;
