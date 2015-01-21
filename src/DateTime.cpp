@@ -12,7 +12,7 @@ DateTime::~DateTime()
 wxString DateTime::GetDateTimeString()
 {
 	wxDateTime now = wxDateTime::Now();
-	return now.Format(wxT("%d.%m.%Y - %H:%M"));
+	return now.Format(wxT("%d.%m.%Y - %H:%S"));
 }
 
 wxString DateTime::GetDateString()

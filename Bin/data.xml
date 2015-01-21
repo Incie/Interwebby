@@ -1,35 +1,35 @@
-<data>
+﻿<data>
     <column>
         <name>xkcd</name>
         <desc>webcomic</desc>
         <url>https://xkcd.com</url>
-        <date>21.01.2015 - 10:47</date>
+        <date>09.12.2014 12:53:57</date>
         <added></added>
-        <timeslaunched>1</timeslaunched>
+        <timeslaunched>0</timeslaunched>
     </column>
     <column>
         <name>doghouse</name>
         <desc>webcomic</desc>
         <url>http://thedoghousediaries.com</url>
-        <date>21.01.2015 - 10:47</date>
+        <date>26.10.2014 20:33:20</date>
         <added></added>
-        <timeslaunched>1</timeslaunched>
+        <timeslaunched>0</timeslaunched>
     </column>
     <column>
         <name>abstrusegoose</name>
         <desc>webcomic</desc>
         <url>http://abstrusegoose.com</url>
-        <date>21.01.2015 - 10:47</date>
+        <date>01.12.2014 08:21:54</date>
         <added></added>
-        <timeslaunched>1</timeslaunched>
+        <timeslaunched>0</timeslaunched>
     </column>
     <column>
         <name>Dark Legacy</name>
         <desc>webcomic</desc>
         <url>http://www.darklegacycomics.com/</url>
-        <date>21.01.2015 - 10:48</date>
+        <date>26.10.2014 20:33:47</date>
         <added></added>
-        <timeslaunched>1</timeslaunched>
+        <timeslaunched>0</timeslaunched>
     </column>
     <column>
         <name>SMBC</name>
