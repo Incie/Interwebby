@@ -8,71 +8,162 @@
 #include<wx/radiobut.h>
 #include<wx/msgdlg.h>
 #include<wx/statbox.h>
+#include"List_objects.h"
 #include"File.h"
 
-SettingsDialog::SettingsDialog(wxWindow *parent) 
-	:wxDialog(parent, wxID_ANY, wxT("Settings"))
+wxStaticBox* SettingsDialog::BuildPathBox(wxWindow* parent)
 {
-	CenterOnParent();
-
-	wxSize clientSize(500, 280);
-	SetClientSize(clientSize);
-
-	panelMain = new wxPanel(this, wxID_ANY, wxPoint(0,0), clientSize);
-
 	//Paths
-	parentPaths   = new wxStaticBox(panelMain, wxID_ANY, wxT("Paths"), wxPoint(5,5), wxSize(490, 75));
-	stPath = new wxStaticText(parentPaths, wxID_ANY, wxT("C:/"), wxPoint(10,25));
-	wxButton *buttonSetPath = new wxButton(parentPaths, wxID_ANY, wxT("Set Data Path"), wxPoint(10,45), wxSize(75,20));
+	wxStaticBox* pathbox = new wxStaticBox(parent, wxID_ANY, wxT("Paths"), wxPoint(5,5), wxSize(490, 75));
+	stPath = new wxStaticText(pathbox, wxID_ANY, wxT("C:/"), wxPoint(10,25));
+	wxButton *buttonSetPath = new wxButton(pathbox, wxID_ANY, wxT("Set Data Path"), wxPoint(10,45), wxSize(75,20));
 
 	Connect(buttonSetPath->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(SettingsDialog::OnButtonSetPath));
+	return pathbox;
+}
 
-
+wxStaticBox* SettingsDialog::BuildColourBox(wxWindow* parent)
+{
 	//ColourBox
-	parentColours = new wxStaticBox(panelMain, wxID_ANY, wxT("Colours"), wxPoint(5,85), wxSize(240, 150));
-	wxStaticText *stColourPicker = new wxStaticText(parentColours, wxID_ANY, wxT("Set Colour:"), wxPoint(10, 25));
-	wxColourPickerCtrl *colour = new wxColourPickerCtrl(parentColours, wxID_ANY, wxColour(0,0,0), wxPoint(10 + stColourPicker->GetSize().x, 19), wxDefaultSize);
-	Connect(colour->GetId(), wxEVT_COMMAND_COLOURPICKER_CHANGED, wxCommandEventHandler(SettingsDialog::OnColour));
+	wxStaticBox* colourBox = new wxStaticBox(parent, wxID_ANY, wxT("Colours"), wxPoint(5,85), wxSize(300, 150));
+	wxStaticText *stColourPicker = new wxStaticText(colourBox, wxID_ANY, wxT("Set Colour:"), wxPoint(10, 25));
+	colourPicker = new wxColourPickerCtrl(colourBox, wxID_ANY, wxColour(0,0,0), wxPoint(10 + stColourPicker->GetSize().x, 19), wxDefaultSize);
+	Connect(colourPicker->GetId(), wxEVT_COMMAND_COLOURPICKER_CHANGED, wxCommandEventHandler(SettingsDialog::OnColour));
 
 	int startHeight = 75;
-	staticTexts.push_back(new wxStaticText(parentColours, wxID_ANY, wxT(" Normal Text "), wxPoint(25,startHeight)));
+	staticTexts.push_back(new wxStaticText(colourBox, wxID_ANY, wxT(" Normal Text "), wxPoint(25,startHeight)));
 	int textHeight = staticTexts[0]->GetSize().y;
 
-	staticTexts.push_back(new wxStaticText(parentColours, wxID_ANY, wxT(" Launched Text   "), wxPoint(25,startHeight + textHeight)));
-	staticTexts.push_back(new wxStaticText(parentColours, wxID_ANY, wxT(" Filtered Text "), wxPoint(25,startHeight + textHeight * 2)));
-	staticTexts.push_back(new wxStaticText(parentColours, wxID_ANY, wxT(" Background    "), wxPoint(25,startHeight + textHeight * 3)));
+	staticTexts.push_back(new wxStaticText(colourBox, wxID_ANY, wxT(" Launched Text   "), wxPoint(25,startHeight + textHeight)));
+	staticTexts.push_back(new wxStaticText(colourBox, wxID_ANY, wxT(" Filtered Text   "), wxPoint(25,startHeight + textHeight * 2)));
+	staticTexts.push_back(new wxStaticText(colourBox, wxID_ANY, wxT(" Background      "), wxPoint(25,startHeight + textHeight * 3)));
 
-	radioButtons.push_back(new wxRadioButton(parentColours, wxID_ANY, wxEmptyString, wxPoint(10,startHeight), wxDefaultSize, wxRB_GROUP));
-	radioButtons.push_back(new wxRadioButton(parentColours, wxID_ANY, wxEmptyString, wxPoint(10,startHeight + textHeight)));
-	radioButtons.push_back(new wxRadioButton(parentColours, wxID_ANY, wxEmptyString, wxPoint(10,startHeight + textHeight*2)));
-	radioButtons.push_back(new wxRadioButton(parentColours, wxID_ANY, wxEmptyString, wxPoint(10,startHeight + textHeight*3)));
+	radioButtons.push_back(new wxRadioButton(colourBox, wxID_ANY, wxEmptyString, wxPoint(10,startHeight), wxDefaultSize, wxRB_GROUP));
+	radioButtons.push_back(new wxRadioButton(colourBox, wxID_ANY, wxEmptyString, wxPoint(10,startHeight + textHeight)));
+	radioButtons.push_back(new wxRadioButton(colourBox, wxID_ANY, wxEmptyString, wxPoint(10,startHeight + textHeight*2)));
+	radioButtons.push_back(new wxRadioButton(colourBox, wxID_ANY, wxEmptyString, wxPoint(10,startHeight + textHeight*3)));
 
 	//checkbox for uniform background 
-	checkUniformBG = new wxCheckBox(parentColours, wxID_ANY, wxT("Uniform Background"), wxPoint(10, 50));
+	checkUniformBG = new wxCheckBox(colourBox, wxID_ANY, wxT("Uniform Background"), wxPoint(10, 50));
 
 	//radiobuttons for selecting foreground or background
-	radioFG = new wxRadioButton(parentColours, wxID_ANY, wxT("Set Foreground"), wxPoint(120,startHeight), wxDefaultSize, wxRB_GROUP);
-	radioBG = new wxRadioButton(parentColours, wxID_ANY, wxT("Set Background"), wxPoint(120,startHeight + textHeight));
+	radioFG = new wxRadioButton(colourBox, wxID_ANY, wxT("Set Foreground"), wxPoint(150,startHeight), wxDefaultSize, wxRB_GROUP);
+	radioBG = new wxRadioButton(colourBox, wxID_ANY, wxT("Set Background"), wxPoint(150,startHeight + textHeight));
 
 	for( unsigned int i = 0; i < radioButtons.size(); ++i )
 		Connect(radioButtons[i]->GetId(), wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler(SettingsDialog::OnRadioButton));
 
+	//Connect FG and BG to the updatecolourpicker
+	Connect(radioFG->GetId(), wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler(SettingsDialog::OnRadioButton));
+	Connect(radioBG->GetId(), wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler(SettingsDialog::OnRadioButton));
 
+
+	return colourBox;
+}
+
+wxCheckBox* SettingsDialog::AddCheckBox( wxWindow* parent, const ColumnData& column, const wxPoint &position )
+{
+	wxCheckBox *checkBox = new wxCheckBox(parent, wxID_ANY, column.name, position );
+	checkBox->SetValue(column.isEnabled);
+	Connect(checkBox->GetId(), wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(SettingsDialog::OnCheck));
+
+	return checkBox;
+}
+
+wxStaticBox* SettingsDialog::BuildColumnBox(wxWindow* parent, const std::vector<ColumnData> &columns)
+{
 	//ColumnBox
-	parentColumns = new wxStaticBox(panelMain, wxID_ANY, wxT("Columns"), wxPoint(255,85), wxSize(240,50));
-	/* Columns-checkboxes is added programmatically at runtime */
+	wxStaticBox* columnBox = new wxStaticBox(parent, wxID_ANY, wxT("Columns"), wxPoint(255,85));
+	
+	wxPoint position(10, 25);
+	wxSize size(175,50);
+	for( unsigned int i = 0; i < columns.size(); ++i )
+	{
+		const ColumnData& column = columns[i];
+		wxCheckBox* checkBox = AddCheckBox(columnBox, column, position);
 
+		position.y += checkBox->GetSize().y + 5;
+
+		SettingsDialog::column c(column.name, column.isEnabled, checkBox->GetId());
+		this->columns.push_back(c);
+	}
+
+	size.y = position.y + 10; //padding
+	columnBox->SetSize(size);
+
+
+	return columnBox;
+}
+
+void SettingsDialog::AdjustBoxSizes( wxStaticBox* pathBox, wxStaticBox* colourBox, wxStaticBox* columnBox )
+{
+	wxSize pathBoxSize = pathBox->GetSize();
+	wxSize colourBoxSize = colourBox->GetSize();
+	wxSize columnBoxSize = columnBox->GetSize();
+
+	const int xPadding = 5;
+	pathBoxSize.x = colourBoxSize.x + xPadding + columnBoxSize.x;
+
+	pathBox->SetSize(pathBoxSize);
+	colourBox->SetSize(colourBoxSize);
+	columnBox->SetSize(columnBoxSize);
+}
+
+void SettingsDialog::AdjustLayoutPositions( wxPanel *mainPanel, wxStaticBox* pathBox, wxStaticBox* colourBox, wxStaticBox* columnBox)
+{
+	wxPoint pathBoxPosition(5,5);
+	wxSize pathBoxSize = pathBox->GetSize();
+	wxPoint colourBoxPosition = colourBox->GetPosition();
+	wxSize colourBoxSize = colourBox->GetSize();
+	wxPoint columnBoxPosition = columnBox->GetPosition();
+
+	wxSize padding(5,5);
+	colourBoxPosition.x = pathBoxPosition.x;
+	colourBoxPosition.y = pathBoxPosition.y + pathBoxSize.y + padding.y;
+
+	columnBoxPosition.x = colourBoxPosition.x + colourBoxSize.x + padding.x;
+	columnBoxPosition.y = colourBoxPosition.y;
+
+	pathBox->SetPosition(pathBoxPosition);
+	colourBox->SetPosition(colourBoxPosition);
+	columnBox->SetPosition(columnBoxPosition);
+
+	wxSize clientSize;
+	clientSize.x = pathBoxSize.x + 5 + 5; //5px padding per side
+	clientSize.y = colourBoxPosition.y + colourBoxSize.y + 5 + 30; //5px padding from the box to button, 30x size = buttonsize + padding
+	SetClientSize(clientSize);
+	mainPanel->SetSize(clientSize);
+}
+
+SettingsDialog::SettingsDialog(wxWindow *parent, const std::vector<ColumnData> &columns) 
+	:wxDialog(parent, wxID_ANY, wxT("Settings"))
+{
+	//Layout 
+	/*
+	 *  |-PathBox----------|
+	 *  |-Colour-||-Column-|
+	 *  |---------OkCancel-|
+	 */
+
+	CenterOnParent();
+
+	wxPanel* panelMain = new wxPanel(this, wxID_ANY, wxPoint(0,0));
+
+	wxStaticBox* pathBox = BuildPathBox(panelMain);
+	wxStaticBox* colourBox = BuildColourBox(panelMain);
+	wxStaticBox* columnBox = BuildColumnBox(panelMain, columns);
+
+	AdjustBoxSizes(pathBox, colourBox, columnBox);
+	AdjustLayoutPositions(panelMain, pathBox, colourBox, columnBox);
 
 	//Dialog Specific
+	wxSize clientSize = GetClientSize();
 	wxSize buttonSize(75, 25);
 	wxButton *buttonCancel = new wxButton(panelMain, wxID_ANY, wxT("Cancel"), wxPoint(clientSize.x - buttonSize.x - 5,clientSize.y - 30), buttonSize);
 	wxButton *buttonOk = new wxButton(panelMain, wxID_ANY, wxT("OK"), wxPoint(buttonCancel->GetPosition().x - buttonSize.x - 5,clientSize.y - 30), buttonSize);
-	
 
 	Connect(buttonOk->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(SettingsDialog::OnButtonOk));
 	Connect(buttonCancel->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(SettingsDialog::OnButtonCancel));
-
-	checkBoxPosition = wxPoint(10,25);
 }
 
 void SettingsDialog::SetPath( const wxString &newpath )
@@ -146,10 +237,43 @@ void SettingsDialog::SetColours( const ListColours &listcolours )
 	wxColour background = listcolours.rgbBackground;
 	staticTexts[3]->SetBackgroundColour( background );
 	staticTexts[3]->SetForegroundColour( wxColour( 255 - background.Red(), 255 - background.Green(), 255 - background.Blue() ) );
+
+	UpdateColourPicker();
+}
+
+void SettingsDialog::UpdateColourPicker()
+{
+	//Get Current Colours
+	wxColour background(0,0,0), foreground(255,255,255);
+	for( unsigned int i = 0; i < radioButtons.size(); ++i )
+	{
+		wxRadioButton *radioButton = radioButtons[i];
+		wxStaticText *staticText = staticTexts[i];
+
+		if( radioButton->GetValue() == true )
+		{
+			background = staticText->GetBackgroundColour();
+			foreground = staticText->GetForegroundColour();
+			break;
+		}
+	}
+
+	//BG or FG colour?
+	bool isForeground = true;
+	if( radioBG->GetValue() )
+		isForeground = false;
+
+	//Set Colour
+	if( isForeground )
+		colourPicker->SetColour(foreground);
+	else colourPicker->SetColour(background);
+
+	colourPicker->Refresh();
 }
 
 void SettingsDialog::OnRadioButton( wxCommandEvent& )
 {
+	UpdateColourPicker();
 }
 
 void SettingsDialog::SetColour( int index, const wxColour &colour, bool background, bool uniformBG )
@@ -184,7 +308,7 @@ void SettingsDialog::SetColour( int index, const wxColour &colour, bool backgrou
 
 void SettingsDialog::OnColour( wxCommandEvent &evt )
 {
-	wxColourPickerCtrl *ctrl = dynamic_cast<wxColourPickerCtrl*>(FindWindowById(evt.GetId(), panelMain));
+	wxColourPickerCtrl *ctrl = dynamic_cast<wxColourPickerCtrl*>(FindWindowById(evt.GetId()));
 
 	if( !ctrl )
 		return;
@@ -208,14 +332,7 @@ void SettingsDialog::OnColour( wxCommandEvent &evt )
 	bool uniformBackgrounds = checkUniformBG->IsChecked();
 
 	SetColour(index, colour, background, uniformBackgrounds);
-	panelMain->Refresh();
-}
-
-wxPoint SettingsDialog::GetNextCheckBoxPosition()
-{
-	wxPoint returnPoint = checkBoxPosition;
-	checkBoxPosition.y += 20;
-	return returnPoint;
+	Refresh();
 }
 
 bool SettingsDialog::GetColumnStatusByName( const wxString &name ) const
@@ -249,22 +366,6 @@ void SettingsDialog::OnCheck( wxCommandEvent &evt )
 			break;
 		}
 	}
-}
-
-void SettingsDialog::AddCheckBox( const wxString &name, bool isEnabled )
-{
-	wxCheckBox *checkBox = new wxCheckBox(parentColumns, wxID_ANY, name, GetNextCheckBoxPosition() );
-	checkBox->SetValue(isEnabled);
-	Connect(checkBox->GetId(), wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(SettingsDialog::OnCheck));
-	
-	wxSize parentSize = parentColumns->GetSize();
-	parentColumns->SetSize(parentSize.x, checkBox->GetPosition().y + 30 );
-
-	SettingsDialog::column c;
-	c.checkboxid = checkBox->GetId();
-	c.enabled = isEnabled;
-	c.name = name;
-	columns.push_back(c);
 }
 
 void SettingsDialog::OnButtonOk( wxCommandEvent& )

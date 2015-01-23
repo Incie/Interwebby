@@ -35,14 +35,8 @@ void MainFrame::OnButtonEntryDown(wxCommandEvent&)
 void MainFrame::OnButtonSettings(wxCommandEvent&)
 {
 	//Set Columnsettings
-	SettingsDialog settingsDlg(this);
-	const ColumnSettings *columnsettings = listinterface.GetColumnSettings();
-
-	for( int i = 0; i < columnsettings->GetColumnCount(); ++i )
-	{
-		const ColumnData *columndata = columnsettings->GetColumnDataByIndex(i);
-		settingsDlg.AddCheckBox(columndata->name, columndata->isEnabled);
-	}
+	std::vector<ColumnData> columns = listinterface.GetColumns();
+	SettingsDialog settingsDlg(this, columns);
 
 	//Get current list colours and send them to the settingsdialog
 	ListColours listcolours;
@@ -59,6 +53,7 @@ void MainFrame::OnButtonSettings(wxCommandEvent&)
 	if( returnValue == wxID_OK )
 	{
 		//Update Column Statuses
+		const ColumnSettings* columnsettings = listinterface.GetColumnSettings();
 		for( int i = 0; i < columnsettings->GetColumnCount(); ++i )
 		{
 			const ColumnData *c = columnsettings->GetColumnDataByIndex(i);

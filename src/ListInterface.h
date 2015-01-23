@@ -48,6 +48,7 @@ public:
 	void GetColours( ListColours &settings ) const;
 	void AssignEntryColour( List &list, int itemID, const DataEntry &entry, bool filtered = false );
 
+	std::vector<ColumnData> GetColumns() const;
 	const ColumnSettings* GetColumnSettings() const { return &columnsettings; }
 	unsigned int GetEntryCount() { return data.size(); }
 	const DataEntry* GetEntryAt(unsigned int i) { if( i >= 0 && i < data.size() ) return data[i]; return 0; }

@@ -19,6 +19,21 @@ ListInterface::~ListInterface()
 	lists.clear();
 }
 
+std::vector<ColumnData> ListInterface::GetColumns() const
+{
+	std::vector<ColumnData> columns;
+
+	const ColumnSettings* columnSettings = GetColumnSettings();
+
+	for( int i = 0; i < columnSettings->GetColumnCount(); i++ )
+	{
+		const ColumnData* cd = columnSettings->GetColumnDataByIndex(i);
+		columns.push_back(*cd);
+	}
+
+	return columns;	
+}
+
 bool ListInterface::MoveSelectedEntry(const wxString &group, int direction)
 {
 	const DataEntry *selected = GetSelectedEntry(group);

@@ -33,7 +33,7 @@ NewDialog::NewDialog(wxWindow *parent, const wxArrayString &groupList, const NDL
 	szname = new wxStaticText(mainpanel, wxID_ANY, wxT("Name"), wxPoint(5,5) );
 	name = new wxTextCtrl(mainpanel, wxID_ANY, wxEmptyString, GetNextPosition(szname, padSmall) , wxSize(390, 20), wxTE_PROCESS_ENTER);
 
-	szdesc = new wxStaticText(mainpanel, wxID_ANY, wxT("Desc"), GetNextPosition(name, pad));
+	szdesc = new wxStaticText(mainpanel, wxID_ANY, wxT("Enter a new group"), GetNextPosition(name, pad));
 	desc = new wxTextCtrl(mainpanel, wxID_ANY, wxEmptyString, GetNextPosition(szdesc, padSmall), wxSize(390, 20), wxTE_PROCESS_ENTER);
 
 	xbtn = new wxButton(desc, wxID_ANY, wxT("X"), wxPoint(368,1), wxSize(20,16), wxBORDER_NONE);

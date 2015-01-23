@@ -17,15 +17,16 @@ class wxRadioButton;
 class wxColour;
 class wxCheckBox;
 class wxStaticBox;
+class wxColourPickerCtrl;
+struct ColumnData;
 
 struct ListColours;
 
 class SettingsDialog : public wxDialog 
 {
 public: 
-	SettingsDialog(wxWindow *parent);
+	SettingsDialog(wxWindow *parent, const std::vector<ColumnData> &columns);
 
-	void AddCheckBox(const wxString &name, bool isEnabled);
 	void SetColours( const ListColours &listcolours );
 	void GetColours( ListColours &colours ) const;
 
@@ -37,8 +38,10 @@ public:
 private:
 	SettingsDialog() {}
 
-	wxPoint GetNextCheckBoxPosition();
-	wxPoint checkBoxPosition;
+	wxCheckBox* AddCheckBox( wxWindow* parent, const ColumnData& column, const wxPoint &position );
+
+	void AdjustBoxSizes( wxStaticBox* pathBox, wxStaticBox* colourBox, wxStaticBox* columnBox );
+	void AdjustLayoutPositions( wxPanel *mainPanel, wxStaticBox* pathBox, wxStaticBox* colourBox, wxStaticBox* columnBox);
 
 	void OnButtonSetPath( wxCommandEvent &evt );
 	void OnRadioButton(wxCommandEvent &evt);
@@ -47,11 +50,17 @@ private:
 	void OnButtonOk(wxCommandEvent &evt);
 	void OnButtonCancel(wxCommandEvent &evt);
 
-	wxPanel *panelMain;
+	//wxPanel *panelMain;
 
-	wxStaticBox *parentColumns;
-	wxStaticBox *parentColours;
-	wxStaticBox *parentPaths;
+	wxStaticBox* BuildPathBox(wxWindow* parent);
+	wxStaticBox* BuildColourBox(wxWindow* parent);
+	wxStaticBox* BuildColumnBox(wxWindow* parent, const std::vector<ColumnData> &columns);
+
+	void UpdateColourPicker();
+	wxColourPickerCtrl *colourPicker;
+	//wxStaticBox *parentColumns;
+	//wxStaticBox *parentColours;
+	//wxStaticBox *parentPaths;
 
 	wxCheckBox *checkUniformBG;
 	wxRadioButton *radioBG, *radioFG;
@@ -62,6 +71,6 @@ private:
 	std::vector<wxStaticText*> staticTexts;
 	std::vector<wxRadioButton*> radioButtons;
 
-	struct column { wxString name; bool enabled; int checkboxid; };
+	struct column { column(const wxString& n, bool e, int id):name(n), enabled(e), checkboxid(id) {} wxString name; bool enabled; int checkboxid; };
 	std::vector<column> columns;
 };
