@@ -65,6 +65,7 @@ private:
 	wxListCtrl* AddNewTab( const wxString &name, int insertIndex = -1 );
 	bool TabExists( const wxString &name );
 	void DeleteSelectedTab();
+	void DeleteAllTabs();
 	void SelectPage(int page);
 	void SelectPage(const wxString &groupName);
 

@@ -52,6 +52,9 @@ void MainFrame::OnButtonSettings(wxCommandEvent&)
 	//Did user press OK?
 	if( returnValue == wxID_OK )
 	{
+		//Disable redrawing untill changes are done
+		Freeze();
+
 		//Update Column Statuses
 		const ColumnSettings* columnsettings = listinterface.GetColumnSettings();
 		for( int i = 0; i < columnsettings->GetColumnCount(); ++i )
@@ -61,13 +64,31 @@ void MainFrame::OnButtonSettings(wxCommandEvent&)
 			listinterface.SetColumnStatus(c->name, status);
 		}
 
+		//Path
 		wxString path = settingsDlg.GetPath();
-		
 		if( path.Cmp(szdatapath) != 0 )
 		{
-			//TODO: Ask if user wants to delete old file
-			//Ask to write a test in the new location?
-			szdatapath = path;
+			SettingsDialog::DataAction action = settingsDlg.GetDataAction();
+
+			switch( action )
+			{
+			case SettingsDialog::FILE_MERGE:
+				szdatapath = path;
+				LoadData();
+				break;
+			case SettingsDialog::FILE_OVERWRITE:
+				szdatapath = path;
+				break;
+			case SettingsDialog::FILE_DISCARD:
+				listinterface.DeleteAll(); //Delete the Data-side
+				DeleteAllTabs(); //Delete the UI side
+				szdatapath = path;
+				LoadData();
+				break;
+
+			case SettingsDialog::FILE_NO_ACTION:
+			default: break;
+			}
 		}
 
 		//Get new colours and send them to the listinterface
@@ -87,6 +108,9 @@ void MainFrame::OnButtonSettings(wxCommandEvent&)
 			if( entry )
 				listinterface.AddEntryToList(*entry);
 		}
+
+		//Enable Drawing again
+		Thaw();
 	}
 }
 

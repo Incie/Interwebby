@@ -9,6 +9,11 @@ ListInterface::ListInterface()
 
 ListInterface::~ListInterface()
 {
+	DeleteAll();
+}
+
+void ListInterface::DeleteAll()
+{
 	for( unsigned int i = 0; i < data.size(); ++i )
 	{
 		DataEntry *e = data[i];

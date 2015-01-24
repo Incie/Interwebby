@@ -112,6 +112,12 @@ bool MainFrame::TabExists( const wxString &name )
 	return false;
 }
 
+void MainFrame::DeleteAllTabs()
+{
+	while( nb->GetPageCount() )
+		DeleteSelectedTab();
+}
+
 void MainFrame::DeleteSelectedTab()
 {
 	int selectedPage = nb->GetSelection();

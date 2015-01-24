@@ -21,6 +21,8 @@ public:
 	ListInterface();
 	~ListInterface();
 
+	void DeleteAll();
+
 	//lists
 	int RegisterList( const wxString &name, wxListCtrl *list, int insertIndex = -1 );
 	int UnregisterList( const wxString &name );

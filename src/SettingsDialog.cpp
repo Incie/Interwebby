@@ -8,8 +8,40 @@
 #include<wx/radiobut.h>
 #include<wx/msgdlg.h>
 #include<wx/statbox.h>
+#include <wx/choicdlg.h>
 #include"List_objects.h"
 #include"File.h"
+
+SettingsDialog::SettingsDialog(wxWindow *parent, const std::vector<ColumnData> &columns) 
+	:wxDialog(parent, wxID_ANY, wxT("Settings")), dataAction(FILE_NO_ACTION)
+{
+	//Layout 
+	/*
+	 *  |-PathBox----------|
+	 *  |-Colour-||-Column-|
+	 *  |---------OkCancel-|
+	 */
+
+	CenterOnParent();
+
+	wxPanel* panelMain = new wxPanel(this, wxID_ANY, wxPoint(0,0));
+
+	wxStaticBox* pathBox = BuildPathBox(panelMain);
+	wxStaticBox* colourBox = BuildColourBox(panelMain);
+	wxStaticBox* columnBox = BuildColumnBox(panelMain, columns);
+
+	AdjustBoxSizes(pathBox, colourBox, columnBox);
+	AdjustLayoutPositions(panelMain, pathBox, colourBox, columnBox);
+
+	//Ok Cancel Buttons
+	wxSize clientSize = GetClientSize();
+	wxSize buttonSize(75, 25);
+	wxButton *buttonCancel = new wxButton(panelMain, wxID_ANY, wxT("Cancel"), wxPoint(clientSize.x - buttonSize.x - 5,clientSize.y - 30), buttonSize);
+	wxButton *buttonOk = new wxButton(panelMain, wxID_ANY, wxT("OK"), wxPoint(buttonCancel->GetPosition().x - buttonSize.x - 5,clientSize.y - 30), buttonSize);
+
+	Connect(buttonOk->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(SettingsDialog::OnButtonOk));
+	Connect(buttonCancel->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(SettingsDialog::OnButtonCancel));
+}
 
 wxStaticBox* SettingsDialog::BuildPathBox(wxWindow* parent)
 {
@@ -56,7 +88,6 @@ wxStaticBox* SettingsDialog::BuildColourBox(wxWindow* parent)
 	//Connect FG and BG to the updatecolourpicker
 	Connect(radioFG->GetId(), wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler(SettingsDialog::OnRadioButton));
 	Connect(radioBG->GetId(), wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler(SettingsDialog::OnRadioButton));
-
 
 	return colourBox;
 }
@@ -135,37 +166,6 @@ void SettingsDialog::AdjustLayoutPositions( wxPanel *mainPanel, wxStaticBox* pat
 	mainPanel->SetSize(clientSize);
 }
 
-SettingsDialog::SettingsDialog(wxWindow *parent, const std::vector<ColumnData> &columns) 
-	:wxDialog(parent, wxID_ANY, wxT("Settings"))
-{
-	//Layout 
-	/*
-	 *  |-PathBox----------|
-	 *  |-Colour-||-Column-|
-	 *  |---------OkCancel-|
-	 */
-
-	CenterOnParent();
-
-	wxPanel* panelMain = new wxPanel(this, wxID_ANY, wxPoint(0,0));
-
-	wxStaticBox* pathBox = BuildPathBox(panelMain);
-	wxStaticBox* colourBox = BuildColourBox(panelMain);
-	wxStaticBox* columnBox = BuildColumnBox(panelMain, columns);
-
-	AdjustBoxSizes(pathBox, colourBox, columnBox);
-	AdjustLayoutPositions(panelMain, pathBox, colourBox, columnBox);
-
-	//Dialog Specific
-	wxSize clientSize = GetClientSize();
-	wxSize buttonSize(75, 25);
-	wxButton *buttonCancel = new wxButton(panelMain, wxID_ANY, wxT("Cancel"), wxPoint(clientSize.x - buttonSize.x - 5,clientSize.y - 30), buttonSize);
-	wxButton *buttonOk = new wxButton(panelMain, wxID_ANY, wxT("OK"), wxPoint(buttonCancel->GetPosition().x - buttonSize.x - 5,clientSize.y - 30), buttonSize);
-
-	Connect(buttonOk->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(SettingsDialog::OnButtonOk));
-	Connect(buttonCancel->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(SettingsDialog::OnButtonCancel));
-}
-
 void SettingsDialog::SetPath( const wxString &newpath )
 {
 	stPath->SetLabel(newpath);
@@ -175,7 +175,7 @@ wxString SettingsDialog::GetPath() const
 {
 	return stPath->GetLabel();
 }
-#include <wx/choicdlg.h>
+
 void SettingsDialog::OnButtonSetPath( wxCommandEvent& )
 {
 	wxString cwd = wxGetCwd();
@@ -193,15 +193,6 @@ void SettingsDialog::OnButtonSetPath( wxCommandEvent& )
 	
 		if( File::ContainsCWD(newpath) )
 			File::TrimCWD(newpath);
-		//***//
-
-		//Test for access
-		if( !File::HasWriteAccess(newpath) )
-		{
-			wxMessageBox(wxString::Format<wxString>(wxT("You do not have write access to the chosen location:\n%s"), newpath), wxT("Access Error"));
-			return;
-		}
-		//**//
 
 		/** -> New File Path
 		  * File Exists?
@@ -210,17 +201,43 @@ void SettingsDialog::OnButtonSetPath( wxCommandEvent& )
 		  * - Merge current and new file?
 		  *
 		  * Files Does not Exist?
-		  * - Save
+		  * - Save [Overwrite]
 		  */
-
-		wxArrayString as;
-		as.Add(wxT("Discard"));
-		as.Add(wxT("Overwrite"));
-		as.Add(wxT("Merge"));
-		wxSingleChoiceDialog scd(this, wxT("Choose"), wxT("Chooooose"), as);
+		if( File::Exists(newpath) )
+		{
+			wxString message(wxT("The chosen file already exist\nWhat action do you want to take?\n\n* Discard current content and load new content into Interwebby\n* Overwrite the file with current content\n* Merge both files\n\nNothing will happen untill you close the settings dialog"));
+			wxString caption(wxT("Existing file found"));
+			wxArrayString as;
+			as.Add(wxT("Merge"));
+			as.Add(wxT("Overwrite"));
+			as.Add(wxT("Discard"));
+			wxSingleChoiceDialog scd(this, message, caption, as);
 		
-		if( scd.ShowModal() == wxOK )
-			int Idontknowwhattodohereyet = 5;
+			//Do nothing if user press cancel
+			if( scd.ShowModal() == wxID_CANCEL )
+				return;
+
+			int selection = scd.GetSelection();
+			switch( selection )
+			{
+			case 0: dataAction = FILE_MERGE; break;
+			case 1: dataAction = FILE_OVERWRITE;break;
+			case 2: dataAction = FILE_DISCARD;break;
+			default: dataAction = FILE_NO_ACTION;break;
+			}
+		}
+		else
+		{
+			//If the file does not exist then action will be to 'overwrite'
+			dataAction = FILE_OVERWRITE;
+		}
+
+		//Test for access
+		if( !File::HasWriteAccess(newpath) )
+		{
+			wxMessageBox(wxString::Format<wxString>(wxT("You do not have write access to the chosen location:\n%s"), newpath), wxT("Access Error"));
+			return;
+		}
 
 		stPath->SetLabel(newpath);
 	}

@@ -5,7 +5,6 @@
 bool File::HasAccess( const wxString& file )
 {
 	wxFile openfile;
-	
 	if( !openfile.Open(file, wxFile::read_write) )
 	{
 		openfile.ClearLastError();
@@ -20,14 +19,19 @@ bool File::HasWriteAccess( const wxString& file )
 {
 	wxLogNull PleaseDoNotDisturb;
 
+	bool fileExists = wxFile::Exists(file);
+
 	wxFile openfile;
-	if( !openfile.Open(file, wxFile::write) )
+	if( !openfile.Open(file, wxFile::write_append) )
 	{
 		openfile.ClearLastError();
 		return false;
 	}
 
 	openfile.Close();
+
+	if( !fileExists )
+		wxRemoveFile(file);
 	return true;
 }
 
@@ -44,6 +48,11 @@ bool File::HasReadAccess( const wxString& file )
 
 	openfile.Close();
 	return true;
+}
+
+bool File::Exists( const wxString& file )
+{
+	return wxFile::Exists(file);
 }
 
 bool File::ContainsCWD( const wxString& path )

@@ -41,6 +41,8 @@ public:
 		FILE_DISCARD,
 		FILE_MERGE
 	};
+
+	DataAction GetDataAction() { return dataAction; }
 private:
 	SettingsDialog() {}
 
