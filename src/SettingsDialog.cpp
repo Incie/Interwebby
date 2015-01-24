@@ -175,7 +175,7 @@ wxString SettingsDialog::GetPath() const
 {
 	return stPath->GetLabel();
 }
-
+#include <wx/choicdlg.h>
 void SettingsDialog::OnButtonSetPath( wxCommandEvent& )
 {
 	wxString cwd = wxGetCwd();
@@ -186,17 +186,14 @@ void SettingsDialog::OnButtonSetPath( wxCommandEvent& )
 	{
 		wxString newpath = openPath.GetPath();
 
+		//Process Path
 		wxString filetype = wxT(".xml");
 		if( !newpath.Contains(filetype) )
 			newpath.Append( filetype );
-
-		if( newpath.StartsWith(cwd) )
-		{
-			newpath = newpath.Remove(0, cwd.length());
-
-			if( newpath.StartsWith(wxT("/")) || newpath.StartsWith(wxT("\\")) )
-				newpath = newpath.Remove(0,1);
-		}
+	
+		if( File::ContainsCWD(newpath) )
+			File::TrimCWD(newpath);
+		//***//
 
 		//Test for access
 		if( !File::HasWriteAccess(newpath) )
@@ -204,6 +201,26 @@ void SettingsDialog::OnButtonSetPath( wxCommandEvent& )
 			wxMessageBox(wxString::Format<wxString>(wxT("You do not have write access to the chosen location:\n%s"), newpath), wxT("Access Error"));
 			return;
 		}
+		//**//
+
+		/** -> New File Path
+		  * File Exists?
+		  * - Overwrite file?
+		  * - Discard current file for the new file?
+		  * - Merge current and new file?
+		  *
+		  * Files Does not Exist?
+		  * - Save
+		  */
+
+		wxArrayString as;
+		as.Add(wxT("Discard"));
+		as.Add(wxT("Overwrite"));
+		as.Add(wxT("Merge"));
+		wxSingleChoiceDialog scd(this, wxT("Choose"), wxT("Chooooose"), as);
+		
+		if( scd.ShowModal() == wxOK )
+			int Idontknowwhattodohereyet = 5;
 
 		stPath->SetLabel(newpath);
 	}

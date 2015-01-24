@@ -2,7 +2,7 @@
 #include<wx/log.h>
 #include<wx/file.h>
 
-bool File::HasAccess( const wxString &file )
+bool File::HasAccess( const wxString& file )
 {
 	wxFile openfile;
 	
@@ -16,7 +16,7 @@ bool File::HasAccess( const wxString &file )
 	return true;
 }
 
-bool File::HasWriteAccess( const wxString &file )
+bool File::HasWriteAccess( const wxString& file )
 {
 	wxLogNull PleaseDoNotDisturb;
 
@@ -31,7 +31,7 @@ bool File::HasWriteAccess( const wxString &file )
 	return true;
 }
 
-bool File::HasReadAccess( const wxString &file )
+bool File::HasReadAccess( const wxString& file )
 {
 	wxLogNull PleaseDoNotDisturb;
 
@@ -44,4 +44,24 @@ bool File::HasReadAccess( const wxString &file )
 
 	openfile.Close();
 	return true;
+}
+
+bool File::ContainsCWD( const wxString& path )
+{
+	wxString cwd = wxGetCwd();
+	if( path.StartsWith(cwd) )
+		return true;
+	return false;
+}
+
+void File::TrimCWD( wxString& path )
+{
+	wxString cwd = wxGetCwd();
+	if( path.StartsWith(cwd) )
+	{
+		path = path.Remove(0, cwd.length());
+
+		if( path.StartsWith(wxT("/")) || path.StartsWith(wxT("\\")) )
+			path = path.Remove(0,1);
+	}
 }

@@ -27,14 +27,20 @@ class SettingsDialog : public wxDialog
 public: 
 	SettingsDialog(wxWindow *parent, const std::vector<ColumnData> &columns);
 
+	bool GetColumnStatusByName( const wxString &name ) const;
+
 	void SetColours( const ListColours &listcolours );
 	void GetColours( ListColours &colours ) const;
 
 	void SetPath( const wxString &newpath );
 	wxString GetPath() const;
 
-	bool GetColumnStatusByName( const wxString &name ) const;
-
+	enum DataAction {
+		FILE_NO_ACTION,
+		FILE_OVERWRITE,
+		FILE_DISCARD,
+		FILE_MERGE
+	};
 private:
 	SettingsDialog() {}
 
@@ -50,22 +56,18 @@ private:
 	void OnButtonOk(wxCommandEvent &evt);
 	void OnButtonCancel(wxCommandEvent &evt);
 
-	//wxPanel *panelMain;
-
 	wxStaticBox* BuildPathBox(wxWindow* parent);
 	wxStaticBox* BuildColourBox(wxWindow* parent);
 	wxStaticBox* BuildColumnBox(wxWindow* parent, const std::vector<ColumnData> &columns);
 
 	void UpdateColourPicker();
 	wxColourPickerCtrl *colourPicker;
-	//wxStaticBox *parentColumns;
-	//wxStaticBox *parentColours;
-	//wxStaticBox *parentPaths;
 
 	wxCheckBox *checkUniformBG;
 	wxRadioButton *radioBG, *radioFG;
 	
 	wxStaticText *stPath;
+	DataAction dataAction;
 
 	void SetColour( int radioIndex, const wxColour &colour, bool background, bool uniformBG );
 	std::vector<wxStaticText*> staticTexts;
