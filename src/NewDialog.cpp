@@ -18,7 +18,7 @@ wxPoint GetNextPosition( const wxWindow* win, const wxSize &padding )
 	return nextposition;
 }
 
-NewDialog::NewDialog(wxWindow *parent, const wxArrayString &groupList, const NDLMode mode) : wxDialog(parent, wxID_ANY, wxT("New..."), wxDefaultPosition, wxDefaultSize, (wxSYSTEM_MENU |  wxCAPTION | wxCLIP_CHILDREN | wxCLOSE_BOX) )
+NewDialog::NewDialog(wxWindow *parent, const NDLMode mode) : wxDialog(parent, wxID_ANY, wxT("New..."), wxDefaultPosition, wxDefaultSize, (wxSYSTEM_MENU |  wxCAPTION | wxCLIP_CHILDREN | wxCLOSE_BOX) )
 {
 	Center();
 
@@ -41,25 +41,16 @@ NewDialog::NewDialog(wxWindow *parent, const wxArrayString &groupList, const NDL
 	xbtn->SetForegroundColour(wxColour(255,25,10));
 
 
+	wxArrayString grouplist;
+	grouplist.Add(wxT("New Group.."));
 	szgroups = new wxStaticText(mainpanel, wxID_ANY, wxT("Select a Group"), GetNextPosition(name, pad) );
-	groups = new wxComboBox(mainpanel, wxID_ANY, wxEmptyString, GetNextPosition(szdesc, padSmall), wxSize(390, 24), groupList, wxTE_PROCESS_ENTER|wxCB_READONLY);
+	groups = new wxComboBox(mainpanel, wxID_ANY, wxEmptyString, GetNextPosition(szdesc, padSmall), wxSize(390, 24), grouplist, wxTE_PROCESS_ENTER|wxCB_READONLY);
+	SetGroupMode(NewDialog::GROUP_TEXT);
 
 	szurl = new wxStaticText(mainpanel, wxID_ANY, wxT("URL"), GetNextPosition(groups, pad) );
 	url = new wxTextCtrl(mainpanel, wxID_ANY, wxEmptyString, GetNextPosition(szurl, padSmall), wxSize(390, 20), wxTE_PROCESS_ENTER);
 
 	url->SetValue( wxT("http://") );
-
-	NewDialog::GroupMode gMode = NewDialog::GROUP_TEXT;
-	if( groupList.size() != 0 )
-	{
-		groups->Select(0);
-		gMode = NewDialog::GROUP_COMBOBOX;
-	}
-
-	SetGroupMode(gMode);
-
-	newGroupString = wxT("New group...");
-	groups->Append(newGroupString);
 
 	//Buttons
 	wxPoint buttonPosition = GetNextPosition(url, wxSize(0,12));
@@ -133,6 +124,23 @@ wxString NewDialog::GetGroup() const
 int NewDialog::FindGroupID( const wxString &group ) const
 {
 	return groups->FindString(group);
+}
+
+
+void NewDialog::SetGroupData( const wxArrayString &grouplist, const wxString &selection )
+{
+	groups->Clear();
+	groups->Set(grouplist);
+	groups->Append(wxT("New Group.."));
+
+	if( grouplist.size() == 0 )
+	{
+		SetGroupMode(NewDialog::GROUP_TEXT);
+		return;
+	}
+
+	SetGroupMode(NewDialog::GROUP_COMBOBOX);
+	SetSelectedGroupAs(selection);
 }
 
 void NewDialog::SetSelectedGroupAs( const wxString &group )
@@ -241,6 +249,7 @@ void NewDialog::SetEntry(const DataEntry& entry)
 	url->SetValue(entry.GetURL());
 	desc->SetValue(entry.GetGroup());
 
+	//This does not work as intended when groupcount is technically 0 (only New Group.. is in it).
 	if( groups->GetCount() == 0 )
 		SetGroupMode(GROUP_TEXT);
 	else

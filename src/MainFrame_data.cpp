@@ -76,10 +76,12 @@ int MainFrame::UpdateEntryProc()
 	if( !currentEntry )
 		return -1;
 
+	NewDialog dlg(this, NDL_MODE_EDIT);
+
 	wxArrayString groupList;
 	GenerateGroupList(groupList);
+	dlg.SetGroupData(groupList, GetSelectedDesc());
 
-	NewDialog dlg(this, groupList, NDL_MODE_EDIT);
 	dlg.SetEntry(*currentEntry);
 
 	if( dlg.ShowModal() == ID_YES )

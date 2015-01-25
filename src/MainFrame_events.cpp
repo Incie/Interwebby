@@ -217,28 +217,36 @@ void MainFrame::OnButtonModify(wxCommandEvent&)
 
 void MainFrame::OnButtonNew(wxCommandEvent&)
 {
-	wxArrayString groupList;
-	GenerateGroupList(groupList);
-
-	NewDialog dlg(this, groupList);
-	dlg.SetSelectedGroupAs(GetSelectedDesc());
+	//Create Dialog
+	NewDialog dlg(this);
 
 	int retValue = ID_YES;
 	do
 	{
+		wxArrayString groupList;
+		GenerateGroupList(groupList);
+		
+		//Combine SetSelected and SetGroups?
+		dlg.SetGroupData(groupList, GetSelectedDesc());
+
+		//Show Dialog
 		retValue = dlg.ShowModal();
 		
 		if( retValue == ID_NO ) 
 			break;
 
+		//Grab Entry 
 		DataEntry newEntry;
 		dlg.GetEntry(newEntry);
 
+		//Validate Unique name
 		if( listinterface.ValidEntryName(newEntry.GetName()) )
 		{
+			//Add Metadata
 			newEntry.SetDateLaunched(wxT("<never>"));
 			newEntry.SetDateAdded(DateTime::GetDateString());
 
+			//Try inserting new data in its new home
 			if( NewData(newEntry) )
 				SelectPage(newEntry.GetGroup());
 			else
@@ -248,7 +256,7 @@ void MainFrame::OnButtonNew(wxCommandEvent&)
 			}
 		}
 	} 
-	while( retValue == ID_YES_AND_MORE );
+	while( retValue == ID_YES_AND_MORE ); //User Pressed Ok+
 }
 
 #include<Windows.h>

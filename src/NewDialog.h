@@ -32,11 +32,13 @@ enum NDLMode
 class NewDialog : public wxDialog 
 {
 public: 
-	NewDialog(wxWindow *parent, const wxArrayString &groups, const NDLMode mode = NDL_MODE_NEW);
+	NewDialog(wxWindow *parent, const NDLMode mode = NDL_MODE_NEW);
 
 	void SetEntry( const DataEntry& entry );
 	void GetEntry( DataEntry &entry ) const;
+
 	void SetSelectedGroupAs( const wxString &group );
+	void SetGroupData( const wxArrayString &groups, const wxString &selection );
 
 private:
 	NewDialog() {}
