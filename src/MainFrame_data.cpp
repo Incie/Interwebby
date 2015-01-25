@@ -87,10 +87,13 @@ int MainFrame::UpdateEntryProc()
 		DataEntry updatedEntry(*currentEntry);
 		dlg.GetEntry(updatedEntry);
 
+		//Do they contain the same group?
 		if( updatedEntry.GetGroup().compare(currentEntry->GetGroup()) == 0 )
 		{
+			//Has the name been changed?
 			if( !currentEntry->CompareName(updatedEntry.GetName()) )
 			{
+				//Check if the new name isn't a duplicate
 				if( !listinterface.ValidEntryName(updatedEntry.GetName()) )
 				{
 					wxMessageBox(wxT("Name Already Exists"), wxT("Error editing entry"));
@@ -102,8 +105,10 @@ int MainFrame::UpdateEntryProc()
 		}
 		else
 		{
+			//Has the name changed?
 			if( !currentEntry->CompareName(updatedEntry.GetName()) )
 			{
+				//Check if the new name isn't a duplicate
 				if( !listinterface.ValidEntryName(updatedEntry.GetName()) )
 				{
 					wxMessageBox(wxT("Name Already Exists"), wxT("Error editing entry"));
@@ -111,6 +116,7 @@ int MainFrame::UpdateEntryProc()
 				}
 			}
 
+			//Delete, [delete tab], and add it as a new entry in another group
 			int status = listinterface.DeleteSelectionFrom(groupName);
 			if( status == DELETE_OK_AND_EMPTY_LIST )
 				DeleteSelectedTab();			
