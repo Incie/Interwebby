@@ -1,9 +1,12 @@
 #pragma once
 
-
 #include<wx/frame.h>
 #include<vector>
 #include"ListInterface.h"
+
+/** MainFrame **
+Object for handling the Main Window.
+*/
 
 class wxListCtrl;
 class wxButton;
@@ -15,13 +18,15 @@ class wxStaticText;
 class wxMenuBar;
 class DataEntry;
 
+struct ButtonData;
+
 class MainFrame : public wxFrame
 {
 public:
 	MainFrame();
 
 private:
-	wxButton* AddButton(wxWindow* parent, const wxString& title, const wxPoint& position, const wxSize& size, wxObjectEventFunction func, bool isShown = true);
+	wxButton* AddButton(wxWindow* parent, const wxPoint &position, const ButtonData &data);
 	void OnChar(wxKeyEvent &evt);
 	void OnButtonDelete(wxCommandEvent &evt);
 	void OnButtonLaunch(wxCommandEvent &evt);
@@ -54,12 +59,13 @@ private:
 
 	wxString GetSelectedDesc();
 
-	void InitNotebook();
+	void InitNotebook(const wxPoint &position);
 	void MoveTab(int direction);
 	bool GenerateGroupList( wxArrayString &groupList );
 	wxListCtrl* AddNewTab( const wxString &name, int insertIndex = -1 );
 	bool TabExists( const wxString &name );
 	void DeleteSelectedTab();
+	void DeleteAllTabs();
 	void SelectPage(int page);
 	void SelectPage(const wxString &groupName);
 

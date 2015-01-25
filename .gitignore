@@ -1,5 +1,7 @@
 *.exe
 
+*/Bin/data.xml
+*/Bin/settings.xml
 
 #Below is ignored gathered by GitHubs collection of ignorefiles
 
@@ -155,5 +157,3 @@ UpgradeLog*.htm
 *.bim_*.settings
 # Microsoft Fakes
 FakesAssemblies/
-Bin/data.xml
-Bin/settings.xml

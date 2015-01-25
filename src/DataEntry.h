@@ -1,5 +1,10 @@
 #pragma once
 
+/** DataEntry **
+Container for dataentries.
+Includes Getters/Setters and 2 utility methods
+*/
+
 #include<wx/string.h>
 
 class DataEntry

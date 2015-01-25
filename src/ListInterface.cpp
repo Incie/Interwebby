@@ -9,6 +9,11 @@ ListInterface::ListInterface()
 
 ListInterface::~ListInterface()
 {
+	DeleteAll();
+}
+
+void ListInterface::DeleteAll()
+{
 	for( unsigned int i = 0; i < data.size(); ++i )
 	{
 		DataEntry *e = data[i];
@@ -19,17 +24,37 @@ ListInterface::~ListInterface()
 	lists.clear();
 }
 
+std::vector<ColumnData> ListInterface::GetColumns() const
+{
+	std::vector<ColumnData> columns;
+
+	const ColumnSettings* columnSettings = GetColumnSettings();
+
+	for( int i = 0; i < columnSettings->GetColumnCount(); i++ )
+	{
+		const ColumnData* cd = columnSettings->GetColumnDataByIndex(i);
+		columns.push_back(*cd);
+	}
+
+	return columns;	
+}
+
 bool ListInterface::MoveSelectedEntry(const wxString &group, int direction)
 {
 	const DataEntry *selected = GetSelectedEntry(group);
 
+	if( !selected )
+		return false;
+
 	List *list = FindListByName(group);
 	int itemid = list->GetSelectedIndex();
 	
+	//Move List Entry
 	if( !list->MoveIndex(itemid, direction) )
 		return false;
 
-	int selectedEntryIndex = -1;
+	//Move Entry in the entrylist
+	int selectedEntryIndex = -1; //Find swap index in list
 	for( unsigned int i = 0; i < GetEntryCount(); ++i )
 	{
 		const DataEntry* entry = data[i];
@@ -44,6 +69,7 @@ bool ListInterface::MoveSelectedEntry(const wxString &group, int direction)
 		}
 	}
 
+	//swap selection and its victim
 	if( selectedEntryIndex != -1 )
 	{
 		int swapIndex = selectedEntryIndex + (direction < 0 ? -1 : 1); 

@@ -35,14 +35,8 @@ void MainFrame::OnButtonEntryDown(wxCommandEvent&)
 void MainFrame::OnButtonSettings(wxCommandEvent&)
 {
 	//Set Columnsettings
-	SettingsDialog settingsDlg(this);
-	const ColumnSettings *columnsettings = listinterface.GetColumnSettings();
-
-	for( int i = 0; i < columnsettings->GetColumnCount(); ++i )
-	{
-		const ColumnData *columndata = columnsettings->GetColumnDataByIndex(i);
-		settingsDlg.AddCheckBox(columndata->name, columndata->isEnabled);
-	}
+	std::vector<ColumnData> columns = listinterface.GetColumns();
+	SettingsDialog settingsDlg(this, columns);
 
 	//Get current list colours and send them to the settingsdialog
 	ListColours listcolours;
@@ -58,7 +52,11 @@ void MainFrame::OnButtonSettings(wxCommandEvent&)
 	//Did user press OK?
 	if( returnValue == wxID_OK )
 	{
+		//Disable redrawing untill changes are done
+		Freeze();
+
 		//Update Column Statuses
+		const ColumnSettings* columnsettings = listinterface.GetColumnSettings();
 		for( int i = 0; i < columnsettings->GetColumnCount(); ++i )
 		{
 			const ColumnData *c = columnsettings->GetColumnDataByIndex(i);
@@ -66,13 +64,31 @@ void MainFrame::OnButtonSettings(wxCommandEvent&)
 			listinterface.SetColumnStatus(c->name, status);
 		}
 
+		//Path
 		wxString path = settingsDlg.GetPath();
-		
 		if( path.Cmp(szdatapath) != 0 )
 		{
-			//TODO: Ask if user wants to delete old file
-			//Ask to write a test in the new location?
-			szdatapath = path;
+			SettingsDialog::DataAction action = settingsDlg.GetDataAction();
+
+			switch( action )
+			{
+			case SettingsDialog::FILE_MERGE:
+				szdatapath = path;
+				LoadData();
+				break;
+			case SettingsDialog::FILE_OVERWRITE:
+				szdatapath = path;
+				break;
+			case SettingsDialog::FILE_DISCARD:
+				listinterface.DeleteAll(); //Delete the Data-side
+				DeleteAllTabs(); //Delete the UI side
+				szdatapath = path;
+				LoadData();
+				break;
+
+			case SettingsDialog::FILE_NO_ACTION:
+			default: break;
+			}
 		}
 
 		//Get new colours and send them to the listinterface
@@ -92,6 +108,9 @@ void MainFrame::OnButtonSettings(wxCommandEvent&)
 			if( entry )
 				listinterface.AddEntryToList(*entry);
 		}
+
+		//Enable Drawing again
+		Thaw();
 	}
 }
 
@@ -127,7 +146,10 @@ void MainFrame::OnButtonExpand(wxCommandEvent&)
 	if( bExpandButtons )
 	{
 		expandBtn->SetLabel(wxT("<<"));
-		expandBtn->SetPosition(wxPoint(750, 5));
+
+		wxPoint newPosition = entryDownBtn->GetPosition() + wxPoint(3,0);
+		newPosition.x += entryDownBtn->GetSize().x;
+		expandBtn->SetPosition(newPosition);
 
 		modBtn->Show();
 		delBtn->Show();
@@ -150,7 +172,7 @@ void MainFrame::OnButtonExpand(wxCommandEvent&)
 	entryDownBtn->Show(false);
 
 	expandBtn->SetLabel(wxT(">>"));
-	expandBtn->SetPosition(wxPoint(150, 5));
+	expandBtn->SetPosition(newBtn->GetPosition());
 }
 
 void MainFrame::OnClose(wxCloseEvent &evt)
@@ -195,28 +217,36 @@ void MainFrame::OnButtonModify(wxCommandEvent&)
 
 void MainFrame::OnButtonNew(wxCommandEvent&)
 {
-	wxArrayString groupList;
-	GenerateGroupList(groupList);
-
-	NewDialog dlg(this, groupList);
-	dlg.SetSelectedGroup(GetSelectedDesc());
+	//Create Dialog
+	NewDialog dlg(this);
 
 	int retValue = ID_YES;
 	do
 	{
+		wxArrayString groupList;
+		GenerateGroupList(groupList);
+		
+		//Combine SetSelected and SetGroups?
+		dlg.SetGroupData(groupList, GetSelectedDesc());
+
+		//Show Dialog
 		retValue = dlg.ShowModal();
 		
 		if( retValue == ID_NO ) 
 			break;
 
+		//Grab Entry 
 		DataEntry newEntry;
 		dlg.GetEntry(newEntry);
 
+		//Validate Unique name
 		if( listinterface.ValidEntryName(newEntry.GetName()) )
 		{
+			//Add Metadata
 			newEntry.SetDateLaunched(wxT("<never>"));
 			newEntry.SetDateAdded(DateTime::GetDateString());
 
+			//Try inserting new data in its new home
 			if( NewData(newEntry) )
 				SelectPage(newEntry.GetGroup());
 			else
@@ -226,7 +256,7 @@ void MainFrame::OnButtonNew(wxCommandEvent&)
 			}
 		}
 	} 
-	while( retValue == ID_YES_AND_MORE );
+	while( retValue == ID_YES_AND_MORE ); //User Pressed Ok+
 }
 
 #include<Windows.h>

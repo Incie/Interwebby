@@ -76,10 +76,12 @@ int MainFrame::UpdateEntryProc()
 	if( !currentEntry )
 		return -1;
 
+	NewDialog dlg(this, NDL_MODE_EDIT);
+
 	wxArrayString groupList;
 	GenerateGroupList(groupList);
+	dlg.SetGroupData(groupList, GetSelectedDesc());
 
-	NewDialog dlg(this, groupList, NDL_MODE_EDIT);
 	dlg.SetEntry(*currentEntry);
 
 	if( dlg.ShowModal() == ID_YES )
@@ -87,10 +89,13 @@ int MainFrame::UpdateEntryProc()
 		DataEntry updatedEntry(*currentEntry);
 		dlg.GetEntry(updatedEntry);
 
+		//Do they contain the same group?
 		if( updatedEntry.GetGroup().compare(currentEntry->GetGroup()) == 0 )
 		{
+			//Has the name been changed?
 			if( !currentEntry->CompareName(updatedEntry.GetName()) )
 			{
+				//Check if the new name isn't a duplicate
 				if( !listinterface.ValidEntryName(updatedEntry.GetName()) )
 				{
 					wxMessageBox(wxT("Name Already Exists"), wxT("Error editing entry"));
@@ -102,8 +107,10 @@ int MainFrame::UpdateEntryProc()
 		}
 		else
 		{
+			//Has the name changed?
 			if( !currentEntry->CompareName(updatedEntry.GetName()) )
 			{
+				//Check if the new name isn't a duplicate
 				if( !listinterface.ValidEntryName(updatedEntry.GetName()) )
 				{
 					wxMessageBox(wxT("Name Already Exists"), wxT("Error editing entry"));
@@ -111,6 +118,7 @@ int MainFrame::UpdateEntryProc()
 				}
 			}
 
+			//Delete, [delete tab], and add it as a new entry in another group
 			int status = listinterface.DeleteSelectionFrom(groupName);
 			if( status == DELETE_OK_AND_EMPTY_LIST )
 				DeleteSelectedTab();			
@@ -131,6 +139,8 @@ bool MainFrame::NewData(const DataEntry &newEntry)
 
 	return listinterface.AddNewEntry(groupName, newEntry);
 }
+
+
 
 void MainFrame::LoadData()
 {
@@ -156,22 +166,22 @@ void MainFrame::LoadData()
 	{
 		DataEntry newEntry;
 		XMLElement *nam = column->FirstChildElement("name");
-		if( nam ) newEntry.SetName(nam->GetText());
+		if( nam ) newEntry.SetName( wxString::FromUTF8(nam->GetText()) );
 
 		XMLElement *des = column->FirstChildElement("desc");
-		if( des ) newEntry.SetGroup(des->GetText());
+		if( des ) newEntry.SetGroup(wxString::FromUTF8(des->GetText()));
 
 		XMLElement *url = column->FirstChildElement("url");
-		if( url ) newEntry.SetURL(url->GetText());
+		if( url ) newEntry.SetURL(wxString::FromUTF8(url->GetText()));
 
 		XMLElement *dat = column->FirstChildElement("date");
-		if( dat ) newEntry.SetDateLaunched(dat->GetText());
+		if( dat ) newEntry.SetDateLaunched(wxString::FromUTF8(dat->GetText()));
 
 		XMLElement *added = column->FirstChildElement("added");
-		if( added ) newEntry.SetDateAdded(added->GetText());
+		if( added ) newEntry.SetDateAdded(wxString::FromUTF8(added->GetText()));
 
 		XMLElement *launched = column->FirstChildElement("timeslaunched");
-		if( launched ) newEntry.SetTimesLaunched(launched->GetText());
+		if( launched ) newEntry.SetTimesLaunched(wxString::FromUTF8(launched->GetText()));
 
 		NewData(newEntry);
 
@@ -200,10 +210,8 @@ void MainFrame::LoadData()
 
 XMLElement* CreateElement(XMLDocument &document, const char* elementName, const wxString& data)
 {
-	const char* strName = data.mb_str(wxConvUTF8);
-
 	XMLElement *element = document.NewElement(elementName);
-	XMLText *nameText = document.NewText(strName);
+	XMLText *nameText = document.NewText((const char*)data.utf8_str()); 
 	element->LinkEndChild(nameText);
 
 	return element;

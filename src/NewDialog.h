@@ -2,6 +2,12 @@
 
 #include<wx/dialog.h>
 
+/** NewDialog **
+A window for adding or modifying DataEntries.
+It can set values for name, group and url. 
+The values for date added, date launched and times launched are handled when the individual actions they are executed.
+*/
+
 class wxButton;
 class wxTextCtrl;
 class wxStaticText;
@@ -26,15 +32,23 @@ enum NDLMode
 class NewDialog : public wxDialog 
 {
 public: 
-	NewDialog(wxWindow *parent, const wxArrayString &groups, const NDLMode mode = NDL_MODE_NEW);
+	NewDialog(wxWindow *parent, const NDLMode mode = NDL_MODE_NEW);
 
 	void SetEntry( const DataEntry& entry );
-	void GetEntry( DataEntry &entry );
-	void SetSelectedGroup( const wxString &group );
+	void GetEntry( DataEntry &entry ) const;
+
+	void SetSelectedGroupAs( const wxString &group );
+	void SetGroupData( const wxArrayString &groups, const wxString &selection );
 
 private:
 	NewDialog() {}
-	void OnButton( wxCommandEvent &evt );
+
+	void OnButtonX(wxCommandEvent&);
+	void OnButtonOK(wxCommandEvent&);
+	void OnButtonOKPlus(wxCommandEvent&);
+	void OnButtonCancel(wxCommandEvent&);
+	void OnKeyEscape(wxCommandEvent&);
+
 	void OnShow( wxShowEvent &evt );
 	void OnEnter(wxCommandEvent&evt);
 	void OnClose(wxCloseEvent&evt);
@@ -59,7 +73,7 @@ private:
 	};
 
 	void SetGroupMode( NewDialog::GroupMode mode );
-	void GetGroup( wxString &string );
-	int FindGroupID( const wxString &group );
-	bool GroupExists( const wxString &group );
+	wxString GetGroup() const;
+	int FindGroupID( const wxString &group ) const;
+	bool GroupExists( const wxString &group ) const;
 };

@@ -10,20 +10,42 @@
 #include<wx/menu.h>
 
 #ifdef _DEBUG
-#define TITLESTRING wxT("Interwebby 1.0.1 (Debugbuild) ")
+#define TITLESTRING wxT("Interwebby 1.0.2 (Debugbuild) ")
 #else
-#define TITLESTRING wxT("Interwebby 1.0.1")
+#define TITLESTRING wxT("Interwebby 1.0.2")
 #endif
 
-wxButton* MainFrame::AddButton(wxWindow* parent, const wxString& title, const wxPoint& position, const wxSize& size, wxObjectEventFunction func, bool isShown)
+
+#include<wx/dcclient.h>
+
+struct ButtonData
 {
-	wxButton *btn = new wxButton(parent, wxID_ANY, title, position, size);
+	ButtonData( const wxString &title, wxObjectEventFunction eventFunc, wxButton **buttonPointer, bool isShown = true )
+		:title(title), eventFunc(eventFunc), buttonPointer(buttonPointer), isShown(isShown)
+	{}
+
+	wxString title;
+	wxObjectEventFunction eventFunc;
+	wxButton **buttonPointer;
+	bool isShown;
+};
+
+wxButton* MainFrame::AddButton(wxWindow* parent, const wxPoint &position, const ButtonData &data)
+{
+	wxButton *btn = new wxButton(parent, wxID_ANY, data.title, position );
+
+	//testing getting text size
+	wxClientDC dc(btn);
+	dc.SetFont( btn->GetFont() );
+	wxSize stringsize = dc.GetTextExtent( data.title );
+
+	btn->SetSize(wxSize(stringsize.x + 12, stringsize.y + 7));
 
 	if( btn )
 	{
-		Connect(btn->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, func);
+		Connect(btn->GetId(), wxEVT_COMMAND_BUTTON_CLICKED, data.eventFunc);
 
-		if( !isShown )
+		if( !data.isShown )
 			btn->Show(false);
 	}
 
@@ -44,18 +66,35 @@ MainFrame::MainFrame() : wxFrame(0, wxID_ANY, TITLESTRING)
 	wxSize buttonSize(70,20);
 	wxSize buttonSizeSmall(30,20); 
 
-	AddButton(mainPanel, wxT("Launch"), wxPoint(0,5), buttonSize, wxCommandEventHandler(MainFrame::OnButtonLaunch) );
-	AddButton(mainPanel, wxT("Launch All"), wxPoint(75,5), buttonSize, wxCommandEventHandler(MainFrame::OnButtonLaunchAll) );
-	newBtn = AddButton(mainPanel, wxT("New.."), wxPoint(150,5), buttonSize, wxCommandEventHandler(MainFrame::OnButtonNew), false );
-	modBtn = AddButton(mainPanel, wxT("Modify.."), wxPoint(225,5), buttonSize, wxCommandEventHandler(MainFrame::OnButtonModify), false );
-	delBtn = AddButton(mainPanel, wxT("Delete"), wxPoint(300,5), buttonSize, wxCommandEventHandler(MainFrame::OnButtonDelete), false );
-	settingsBtn = AddButton(mainPanel, wxT("Settings"), wxPoint(375,5), buttonSize, wxCommandEventHandler(MainFrame::OnButtonSettings), false);
-	tabLeftBtn = AddButton(mainPanel, wxT("<< Tab"), wxPoint(450,5), buttonSize, wxCommandEventHandler(MainFrame::OnButtonTabLeft), false);
-	tabRightBtn = AddButton(mainPanel, wxT("Tab >>"), wxPoint(525,5), buttonSize, wxCommandEventHandler(MainFrame::OnButtonTabRight), false);
-	entryUpBtn = AddButton(mainPanel, wxT("Entry Up"), wxPoint(600,5), buttonSize, wxCommandEventHandler(MainFrame::OnButtonEntryUp), false);
-	entryDownBtn = AddButton(mainPanel, wxT("Entry Down"), wxPoint(675,5), buttonSize, wxCommandEventHandler(MainFrame::OnButtonEntryDown), false);
-	
-	expandBtn = AddButton(mainPanel, wxT(">>"), wxPoint(150,5), buttonSizeSmall, wxCommandEventHandler(MainFrame::OnButtonExpand) );
+	ButtonData buttons[] = {
+		ButtonData(wxT("Launch"), wxCommandEventHandler(MainFrame::OnButtonLaunch), 0),
+		ButtonData(wxT("Launch All"), wxCommandEventHandler(MainFrame::OnButtonLaunchAll), 0),
+		ButtonData(wxT("New.."), wxCommandEventHandler(MainFrame::OnButtonNew), &newBtn, false),
+		ButtonData(wxT("Modify.."), wxCommandEventHandler(MainFrame::OnButtonModify), &modBtn, false),
+		ButtonData(wxT("Delete"), wxCommandEventHandler(MainFrame::OnButtonDelete), &delBtn, false),
+		ButtonData(wxT("Settings"), wxCommandEventHandler(MainFrame::OnButtonSettings), &settingsBtn, false),
+		ButtonData(wxT("<< Tab"), wxCommandEventHandler(MainFrame::OnButtonTabLeft), &tabLeftBtn, false),
+		ButtonData(wxT("Tab >>"), wxCommandEventHandler(MainFrame::OnButtonTabRight), &tabRightBtn, false),
+		ButtonData(wxT("Entry ^"), wxCommandEventHandler(MainFrame::OnButtonEntryUp), &entryUpBtn, false),
+		ButtonData(wxT("Entry v"), wxCommandEventHandler(MainFrame::OnButtonEntryDown), &entryDownBtn, false)
+	};
+
+	wxPoint pos(0,5);
+	int adjustment = 3;
+	int numButtons = sizeof(buttons) / sizeof(ButtonData);
+	for( int i = 0; i < numButtons; ++i )
+	{
+		ButtonData &buttonData = buttons[i];
+		wxButton *button = AddButton(mainPanel, pos, buttonData);
+
+		if( buttonData.buttonPointer )
+			(*buttonData.buttonPointer) = button;
+		
+		pos.x += button->GetSize().x + adjustment;
+	}
+
+	ButtonData buttonExpand(wxT(">>"), wxCommandEventHandler(MainFrame::OnButtonExpand), 0, true);
+	expandBtn = AddButton(mainPanel, newBtn->GetPosition(), buttonExpand );
 
 	filtertxt = new wxStaticText(mainPanel, wxID_ANY, wxT("Filter:"), wxPoint(675,7));
 	filter = new wxTextCtrl(mainPanel, wxID_ANY, wxEmptyString, wxPoint(720,5), wxSize(75,20));
@@ -73,7 +112,7 @@ MainFrame::MainFrame() : wxFrame(0, wxID_ANY, TITLESTRING)
 	Connect(wxEVT_SIZE, wxSizeEventHandler(MainFrame::OnResize));
 
 	CreateStatusBar(1);
-	InitNotebook();
+	InitNotebook( wxPoint(0, newBtn->GetPosition().y + newBtn->GetSize().y + 5) );
 	LoadDefaultSettings();
 	LoadSettings();
 	LoadData();

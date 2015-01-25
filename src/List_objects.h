@@ -3,6 +3,22 @@
 #include<wx/colour.h>
 #include<vector>
 
+/** List Objects **
+Collection of flags and objects
+
+>struct List
+- Abstraction of wxListCtrl
+
+>struct ColumnData
+- Information for columns
+
+>ColumnSettings
+- Collection of ColumnData
+
+>ListColours
+- Collection of Colours used in the GUI lists
+*/
+
 class wxListCtrl;
 
 enum DeleteFlags

@@ -4,6 +4,12 @@
 #include<wx/string.h>
 #include"List_objects.h"
 
+/** ListInterface **
+Handles the actual GUI lists, columns and the entry database.
+
+--> It was meant as a simple abstraction, but got a bit out of hand
+*/
+
 class DataEntry;
 class wxListCtrl;
 class wxSize;
@@ -15,7 +21,7 @@ public:
 	ListInterface();
 	~ListInterface();
 
-	wxString dbgGenerateEntryList();
+	void DeleteAll();
 
 	//lists
 	int RegisterList( const wxString &name, wxListCtrl *list, int insertIndex = -1 );
@@ -44,6 +50,7 @@ public:
 	void GetColours( ListColours &settings ) const;
 	void AssignEntryColour( List &list, int itemID, const DataEntry &entry, bool filtered = false );
 
+	std::vector<ColumnData> GetColumns() const;
 	const ColumnSettings* GetColumnSettings() const { return &columnsettings; }
 	unsigned int GetEntryCount() { return data.size(); }
 	const DataEntry* GetEntryAt(unsigned int i) { if( i >= 0 && i < data.size() ) return data[i]; return 0; }
