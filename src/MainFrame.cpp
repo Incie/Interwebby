@@ -10,9 +10,9 @@
 #include<wx/menu.h>
 
 #ifdef _DEBUG
-#define TITLESTRING wxT("Interwebby 1.0.2 (Debugbuild) ")
+#define TITLESTRING wxT("Interwebby 1.0.3 dev (Debugbuild) ")
 #else
-#define TITLESTRING wxT("Interwebby 1.0.2")
+#define TITLESTRING wxT("Interwebby 1.0.3 dev")
 #endif
 
 

@@ -22,7 +22,9 @@ void MainFrame::MoveTab(int direction)
 	wxString groupName = nb->GetPageText(currentPage);
 
 	DeleteSelectedTab();
-	AddNewTab(groupName, swapPage);
+	wxListCtrl *list = AddNewTab(groupName, swapPage);
+
+	list->Hide();
 
 	for( unsigned int i = 0; i < listinterface.GetEntryCount(); ++i )
 	{
@@ -36,6 +38,9 @@ void MainFrame::MoveTab(int direction)
 	}
 
 	listinterface.SortEntriesByGroup();
+	
+	list->Show();
+	//nb->Refresh();
 }
 
 bool MainFrame::GenerateGroupList( wxArrayString &groupList )
@@ -81,12 +86,22 @@ void MainFrame::SelectPage(int page)
 
 wxListCtrl* MainFrame::AddNewTab( const wxString &name, int insertIndex )
 {
+	//Panel
 	wxPanel *newPanel = new wxPanel(nb, wxID_ANY);
-	wxListCtrl *pageList = new wxListCtrl(newPanel, wxID_ANY, wxPoint(0,0), nb->GetSize(), wxLC_REPORT|wxLC_SINGLE_SEL);
 
+	ListColours settings;
+	listinterface.GetColours(settings);
+	newPanel->SetBackgroundColour( settings.rgbBackground );
+
+	//ListControl
+	wxListCtrl *pageList = new wxListCtrl(newPanel, wxID_ANY, wxPoint(0,0), nb->GetSize(), wxLC_REPORT|wxLC_SINGLE_SEL);
+	pageList->Hide();
+
+	//Messages
 	Connect(pageList->GetId(), wxEVT_COMMAND_LIST_ITEM_ACTIVATED, wxCommandEventHandler(MainFrame::OnButtonLaunch) );
 	Connect(pageList->GetId(), wxEVT_COMMAND_LIST_COL_END_DRAG, wxListEventHandler(MainFrame::OnColumnResize) );
 
+	//Do we Add or Insert a page
 	if( insertIndex == -1 )
 	{
 		nb->AddPage(newPanel, name);
@@ -95,7 +110,10 @@ wxListCtrl* MainFrame::AddNewTab( const wxString &name, int insertIndex )
 	else
 		nb->InsertPage(insertIndex, newPanel, name, true);
 
+	//Tell the listinterface about the new list
 	listinterface.RegisterList(name, pageList, insertIndex);
+	pageList->Show();
+	//pageList->Refresh();
 
 	return pageList;
 }
@@ -153,7 +171,11 @@ void MainFrame::OnResize( wxSizeEvent& )
 
 
 	//Todo: verify if minus statusbar.y is actually needed
-	nb->SetSize(clientSize.x, clientSize.y - GetStatusBar()->GetSize().y);
+
+	wxPoint nbPosition = nb->GetPosition();
+	wxSize nbSize( clientSize.x - nbPosition.x, clientSize.y - nbPosition.y );
+	
+	nb->SetSize(nbSize);
 
 	int selection = nb->GetSelection();
 	if( selection != wxNOT_FOUND )

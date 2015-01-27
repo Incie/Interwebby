@@ -7,7 +7,7 @@
         <column name="Launched" width="36" enabled="1"/>
     </columns>
     <data-path>data.xml</data-path>
-    <window WinX="279" WinY="48" WinW="904" WinH="637" Maximized="0"/>
+    <window WinX="279" WinY="48" WinW="917" WinH="635" Maximized="0"/>
     <colours>
         <launch-text Red="47" Green="243" Blue="12"/>
         <launch-bg Red="0" Green="0" Blue="0"/>
