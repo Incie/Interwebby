@@ -43,9 +43,13 @@ bool ListInterface::MoveSelectedEntry(const wxString &group, int direction)
 {
 	const DataEntry *selected = GetSelectedEntry(group);
 
+	if( !selected )
+		return false;
+
 	List *list = FindListByName(group);
 	int itemid = list->GetSelectedIndex();
 	
+	//Move List Index
 	if( !list->MoveIndex(itemid, direction) )
 		return false;
 
@@ -64,6 +68,7 @@ bool ListInterface::MoveSelectedEntry(const wxString &group, int direction)
 		}
 	}
 
+	//Swap selection and its victim
 	if( selectedEntryIndex != -1 )
 	{
 		int swapIndex = selectedEntryIndex + (direction < 0 ? -1 : 1); 
