@@ -12,6 +12,7 @@ ListInterface::~ListInterface()
 	DeleteAll();
 }
 
+
 void ListInterface::DeleteAll()
 {
 	for( unsigned int i = 0; i < data.size(); ++i )
@@ -33,6 +34,14 @@ void ListInterface::SortList( const wxString& group, int columnId )
 	List *list = FindListByName(group);
 	if( !list )
 		return;
+
+	bool bNumericalSort = false;
+	const ColumnData *cdlaunched = columnsettings.GetColumnData(wxT("Launched"));	
+	if( cdlaunched ) 
+	{
+		if( cdlaunched->columnindex == columndata->columnindex )
+			bNumericalSort = true;
+	}
 
 	//Save the Selected Name
 	int nameColumnId = columnsettings.GetColumnID(wxT("Name"));
@@ -62,7 +71,7 @@ void ListInterface::SortList( const wxString& group, int columnId )
 		else
 		{
 			bool bReverse = status==0?false:true;
-			list->Sort(columnId, bReverse);	
+			list->Sort(columnId, bReverse, bNumericalSort);	
 		}
 
 		//Check if something happened

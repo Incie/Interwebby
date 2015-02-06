@@ -2,7 +2,7 @@
 #include<wx/listctrl.h>
 
 
-int List::GetSortStatus(int columnId)
+int List::GetSortStatus(int columnId, bool bAsNumerical)
 {
 	int sortStatus = 0;
 	bool bSortedReverse = true;
@@ -21,6 +21,22 @@ int List::GetSortStatus(int columnId)
 		wxString value = GetColumnValue(itemId, columnId);
 
 		int cmpValue = prevString.CmpNoCase(value);
+
+		if( bAsNumerical )
+		{
+			long nVal = -1;
+			value.ToLong(&nVal);
+
+			long nPrev = -1;
+			prevString.ToLong(&nPrev);
+
+			cmpValue = 0;
+			if( nPrev > nVal )
+				cmpValue = 1;
+			else if( nPrev < nVal )
+				cmpValue = -1;
+		}
+
 
 		if( bSorted && cmpValue > 0 ) bSorted = false;
 		if( bSortedReverse && cmpValue < 0 ) bSortedReverse = false;
@@ -41,9 +57,8 @@ int List::GetSortStatus(int columnId)
 /**
   Sort the listctrl using Selection-Sort
  **/
-bool List::Sort(int columnId, bool bReverse)
+bool List::Sort(int columnId, bool bReverse, bool bSortAsNumerical)
 {
-	//int selectedID = GetSelectedIndex();
 	int reverseMultiplier = bReverse? -1 : 1;
 	for( int itemid = 0; itemid < list->GetItemCount(); itemid++ )
 	{
@@ -51,16 +66,23 @@ bool List::Sort(int columnId, bool bReverse)
 		wxString bestCandidate;
 
 		int swapId = -1;
-
 		for( int sortitem = itemid+1; sortitem < list->GetItemCount(); ++sortitem )
 		{
 			const wxString cmpText = GetColumnValue(sortitem, columnId);
-
 			int cmpValue = cmpText.CmpNoCase(itemText);
+
+			if( bSortAsNumerical )
+				cmpValue = CmpAsNumerical(cmpText, itemText);
+
 			if( cmpValue * reverseMultiplier < 0 )
 			{
+				int cmpBestCand = cmpText.CmpNoCase(bestCandidate);
+
+				if( bSortAsNumerical )
+					cmpBestCand = CmpAsNumerical(cmpText, bestCandidate);				
+
 				if( swapId == -1 || 
-					cmpText.CmpNoCase(bestCandidate) * reverseMultiplier < 0 )
+					cmpBestCand * reverseMultiplier < 0 )
 				{
 					swapId = sortitem;
 					bestCandidate = cmpText;
@@ -69,24 +91,27 @@ bool List::Sort(int columnId, bool bReverse)
 		}
 
 		if( swapId != -1 )
-		//{
 			SwapItems(itemid, swapId);
-
-		//	//if( itemid == selectedID )
-		//	//	selectedID = swapId;
-		//	//else if( swapId == selectedID )
-		//	//	selectedID = itemid;
-		//}
 	}
 
-	//int deselectId = GetSelectedIndex();
-
-	//if( deselectId != -1 )
-	//	list->SetItemState(deselectId, 0, wxLIST_STATE_SELECTED);
-	//if( selectedID != -1 )
-	//	list->SetItemState(selectedID, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
-
 	return true;
+}
+
+int List::CmpAsNumerical(const wxString &s0, const wxString &s1)
+{
+	long n0 = 0;
+	long n1 = 0;
+
+	if( !s0.ToLong(&n0) || !s1.ToLong(&n1) )
+		return 1;
+
+	if( n0 < n1 )
+		return -1;
+
+	if( n0 > n1 )
+		return 1;
+
+	return 0;
 }
 
 bool List::SwapItems(int id0, int id1)
