@@ -11,6 +11,11 @@
 
 #include"SettingsDialog.h"
 
+void MainFrame::OnColumnClick(wxListEvent& evt)
+{
+	listinterface.SortList(GetSelectedDesc(), evt.GetColumn());
+}
+
 void MainFrame::OnButtonTabRight(wxCommandEvent&)
 {
 	MoveTab(1);

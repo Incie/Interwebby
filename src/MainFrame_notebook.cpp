@@ -98,6 +98,7 @@ wxListCtrl* MainFrame::AddNewTab( const wxString &name, int insertIndex )
 	pageList->Hide();
 
 	//Messages
+	Connect(pageList->GetId(), wxEVT_COMMAND_LIST_COL_CLICK, wxListEventHandler(MainFrame::OnColumnClick) );
 	Connect(pageList->GetId(), wxEVT_COMMAND_LIST_ITEM_ACTIVATED, wxCommandEventHandler(MainFrame::OnButtonLaunch) );
 	Connect(pageList->GetId(), wxEVT_COMMAND_LIST_COL_END_DRAG, wxListEventHandler(MainFrame::OnColumnResize) );
 

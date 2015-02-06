@@ -46,6 +46,7 @@ private:
 	void OnClose(wxCloseEvent &evt);
 	void OnResize(wxSizeEvent & evt);
 	void OnColumnResize(wxListEvent &evt);
+	void OnColumnClick(wxListEvent &evt);
 
 	bool NewData(const DataEntry &newEntry);
 	

@@ -28,6 +28,7 @@ public:
 	int UnregisterList( const wxString &name );
 	void ResizeAllLists( const wxSize &size );
 
+	void SortList( const wxString& group, int columnId );
 	void ClearAllLists();
 	void RebuildListColumns();
 	void ColumnsResized(const wxString &group, int columnIndex, int columnWidth);

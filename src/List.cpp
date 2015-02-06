@@ -1,21 +1,130 @@
 #include"ListInterface.h"
 #include<wx/listctrl.h>
 
+
+int List::GetSortStatus(int columnId)
+{
+	int sortStatus = 0;
+	bool bSortedReverse = true;
+	bool bSorted = true;
+
+	//Setup Initial Conditions
+	int itemId = GetNextItemId(-1);
+	if( itemId == -1 )
+		return 0;
+
+	wxString prevString = GetColumnValue(itemId, columnId);
+	itemId = GetNextItemId(itemId);
+	
+	while( itemId != -1 )
+	{
+		wxString value = GetColumnValue(itemId, columnId);
+
+		int cmpValue = prevString.CmpNoCase(value);
+
+		if( bSorted && cmpValue > 0 ) bSorted = false;
+		if( bSortedReverse && cmpValue < 0 ) bSortedReverse = false;
+
+		prevString = value;
+		itemId = GetNextItemId(itemId);
+	}
+
+	if( bSorted ) sortStatus = 1;
+	if( bSortedReverse ) sortStatus = -1;
+
+	if( bSorted && bSortedReverse )
+		return 0;
+
+	return sortStatus;
+}
+
+/**
+  Sort the listctrl using Selection-Sort
+ **/
+bool List::Sort(int columnId, bool bReverse)
+{
+	//int selectedID = GetSelectedIndex();
+	int reverseMultiplier = bReverse? -1 : 1;
+	for( int itemid = 0; itemid < list->GetItemCount(); itemid++ )
+	{
+		const wxString itemText = GetColumnValue(itemid, columnId);
+		wxString bestCandidate;
+
+		int swapId = -1;
+
+		for( int sortitem = itemid+1; sortitem < list->GetItemCount(); ++sortitem )
+		{
+			const wxString cmpText = GetColumnValue(sortitem, columnId);
+
+			int cmpValue = cmpText.CmpNoCase(itemText);
+			if( cmpValue * reverseMultiplier < 0 )
+			{
+				if( swapId == -1 || 
+					cmpText.CmpNoCase(bestCandidate) * reverseMultiplier < 0 )
+				{
+					swapId = sortitem;
+					bestCandidate = cmpText;
+				}
+			}
+		}
+
+		if( swapId != -1 )
+		//{
+			SwapItems(itemid, swapId);
+
+		//	//if( itemid == selectedID )
+		//	//	selectedID = swapId;
+		//	//else if( swapId == selectedID )
+		//	//	selectedID = itemid;
+		//}
+	}
+
+	//int deselectId = GetSelectedIndex();
+
+	//if( deselectId != -1 )
+	//	list->SetItemState(deselectId, 0, wxLIST_STATE_SELECTED);
+	//if( selectedID != -1 )
+	//	list->SetItemState(selectedID, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+
+	return true;
+}
+
+bool List::SwapItems(int id0, int id1)
+{
+	if( id0 < 0 || id0 >= list->GetItemCount() )
+		return false;
+
+	if( id1 < 0 || id1 >= list->GetItemCount() )
+		return false;
+
+	//Swap values by column
+	for( int i = 0; i < list->GetColumnCount(); ++i )
+	{
+		wxString v0 = GetColumnValue(id0, i);
+		wxString v1 = GetColumnValue(id1, i);
+
+		//Set ID0 with Value1
+		UpdateValue(id0, i, v1);
+		
+		//Set ID1 with Value0
+		UpdateValue(id1, i, v0);
+	}
+
+	//Swap Colours
+	wxColour c0[2] = { list->GetItemBackgroundColour(id0), list->GetItemTextColour(id0) };
+	wxColour c1[2] = { list->GetItemBackgroundColour(id1), list->GetItemTextColour(id1) };
+
+	SetItemColours(id0, c1[1], c1[0]);
+	SetItemColours(id1, c0[1], c0[0]);
+
+	return true;
+}
+
 bool List::MoveIndex( int itemid, int direction )
 {
 	int swapitemid = itemid + (direction < 0 ? 1 : -1); //ListCtrl indices are logically in reverse (so up is down, and down is up)
 
-	if( swapitemid < 0 || swapitemid >= list->GetItemCount() )
-		return false;
-
-	for( int i = 0; i < list->GetColumnCount(); ++i )
-	{
-		wxString v0 = GetColumnValue(itemid, i);
-		wxString v1 = GetColumnValue(swapitemid, i);
-
-		UpdateValue(itemid, i, v1);
-		UpdateValue(swapitemid, i, v0);
-	}
+	SwapItems(itemid, swapitemid);
 
 	list->SetItemState(swapitemid, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
 
@@ -101,13 +210,7 @@ int List::FindItemIdFromColumnValue( const wxString &value, int column )
 
 		if( itemid != -1 )
 		{
-			wxListItem listitem;
-			listitem.m_itemId = itemid;
-			listitem.m_col = column;
-			listitem.m_mask = wxLIST_MASK_TEXT;
-			list->GetItem(listitem);
-
-			const wxString &itemValue = listitem.m_text;
+			const wxString itemValue = GetColumnValue(itemid, column);
 			if( itemValue.Cmp(value) == 0 )
 				return itemid;
 		}
@@ -118,7 +221,7 @@ int List::FindItemIdFromColumnValue( const wxString &value, int column )
 
 wxString List::GetColumnValue( int itemid, int column ) 
 { 
-	if( !list )
+	if( !list || itemid == -1 )
 		return wxEmptyString;
 
 	wxListItem listitem;

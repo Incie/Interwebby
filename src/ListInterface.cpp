@@ -24,6 +24,68 @@ void ListInterface::DeleteAll()
 	lists.clear();
 }
 
+void ListInterface::SortList( const wxString& group, int columnId )
+{
+	const ColumnData *columndata = columnsettings.GetColumnDataById(columnId);
+	if( !columndata )
+		return;
+
+	List *list = FindListByName(group);
+	if( !list )
+		return;
+
+	//Save the Selected Name
+	int nameColumnId = columnsettings.GetColumnID(wxT("Name"));
+	int selectedIndex = list->GetSelectedIndex();
+	wxString selectedName;
+
+	if( selectedIndex != -1 )
+		selectedName = list->GetColumnValue(selectedIndex, nameColumnId);
+
+	bool bDone = false;
+	int status = list->GetSortStatus(columnId);
+	int iterationCount = 0;
+
+	while( !bDone )
+	{
+		//Get Current Sort Status
+		if( status < 0 )
+		{
+			list->list->DeleteAllItems();
+			for( unsigned int i = 0; i < GetEntryCount(); ++i )
+			{
+				const DataEntry *entry = GetEntryAt(i);
+				if( entry && entry->CompareGroup(group) )
+					AddEntryToList(*entry);
+			}
+		}
+		else
+		{
+			bool bReverse = status==0?false:true;
+			list->Sort(columnId, bReverse);	
+		}
+
+		//Check if something happened
+		int finishedstatus = list->GetSortStatus(columnId);
+		if( status != finishedstatus )
+			bDone = true;
+		else
+		{
+			if( finishedstatus == 0 ) status = 1;
+			else if( finishedstatus == 1 ) status = -1;
+			else status = 0;
+		}
+
+		//Guard against infinite looping
+		if( iterationCount > 2 )
+			break;
+	}
+
+	int toBeSelectedId = list->FindItemIdFromColumnValue(selectedName, nameColumnId);
+	if( toBeSelectedId != -1 )
+		list->list->SetItemState(toBeSelectedId, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+}
+
 std::vector<ColumnData> ListInterface::GetColumns() const
 {
 	std::vector<ColumnData> columns;

@@ -42,6 +42,9 @@ struct List
 	bool isEmpty();
 	bool SetItemColours( int itemid, const wxColour &textColour, const wxColour &bgColour );
 	int GetNextItemId( int previousid );
+	int GetSortStatus(int columnId);
+	bool Sort(int columnId, bool bReverse);
+	bool SwapItems(int id0, int id1);
 
 	wxListCtrl *list;
 	wxString name;
@@ -69,6 +72,7 @@ public:
 	const ColumnData* GetColumnData(const wxString &name) const;
 	int GetColumnID(const wxString &name) const;
 
+	const ColumnData* GetColumnDataById(int id) const;
 	const ColumnData* GetColumnDataByIndex(int n) const;
 	int GetColumnCount() const;
 

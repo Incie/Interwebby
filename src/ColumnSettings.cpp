@@ -26,6 +26,19 @@ ColumnSettings::~ColumnSettings()
 	columns.clear();
 }
 
+const ColumnData* ColumnSettings::GetColumnDataById(int id) const
+{
+	for( constcolumniterator it = columns.begin(); it != columns.end(); ++it )
+	{
+		const ColumnData *cdata = *it;
+
+		if( cdata->columnindex == id )
+			return cdata;
+	}
+
+	return 0;
+}
+
 const ColumnData* ColumnSettings::GetColumnDataByIndex(int n) const
 {
 	if( n < 0 || n >= (int)columns.size() )

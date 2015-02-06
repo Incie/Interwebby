@@ -113,6 +113,9 @@ wxStaticBox* SettingsDialog::BuildColumnBox(wxWindow* parent, const std::vector<
 		const ColumnData& column = columns[i];
 		wxCheckBox* checkBox = AddCheckBox(columnBox, column, position);
 
+		if( column.name.Cmp(wxT("Name")) == 0 )
+			checkBox->Enable(false);
+
 		position.y += checkBox->GetSize().y + 5;
 
 		SettingsDialog::column c(column.name, column.isEnabled, checkBox->GetId());
