@@ -15,7 +15,7 @@
 #define TITLESTRING wxT("Interwebby 1.0.3 dev")
 #endif
 
-
+#include"resource/resource.h"
 #include<wx/dcclient.h>
 
 struct ButtonData
@@ -55,9 +55,12 @@ wxButton* MainFrame::AddButton(wxWindow* parent, const wxPoint &position, const 
 MainFrame::MainFrame() : wxFrame(0, wxID_ANY, TITLESTRING)
 {
 	wxImage::AddHandler( new wxPNGHandler() );
+	wxImage::AddHandler( new wxICOHandler() );
 
-	SetIcon(wxIcon( wxT("icon.png"), wxBITMAP_TYPE_PNG));
+	// Note that '#define IDI_ICON1 101' was removed from resource.h to make this happen
+	SetIcon( wxICON(IDI_ICON1) );
 
+	
 	SetClientSize(911,400);
 	Centre();
 	

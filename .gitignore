@@ -157,3 +157,5 @@ UpgradeLog*.htm
 *.bim_*.settings
 # Microsoft Fakes
 FakesAssemblies/
+src/resource/icon.png
+src/resource/icon2.ico

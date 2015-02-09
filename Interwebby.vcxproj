@@ -109,8 +109,15 @@
     <ClInclude Include="src\List_objects.h" />
     <ClInclude Include="src\MainFrame.h" />
     <ClInclude Include="src\NewDialog.h" />
+    <ClInclude Include="src\resource\resource.h" />
     <ClInclude Include="src\SettingsDialog.h" />
     <ClInclude Include="src\tinyxml2.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\resource\Interwebby.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\resource\icon1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

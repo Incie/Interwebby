@@ -26,6 +26,9 @@
     <Filter Include="Source Files\File">
       <UniqueIdentifier>{f432d417-573b-454f-a4cd-b00ce6a5adcf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{52538220-7b2a-4a59-9e50-74b5603ad0bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Entry.cpp">
@@ -96,5 +99,18 @@
     <ClInclude Include="src\File.h">
       <Filter>Source Files\File</Filter>
     </ClInclude>
+    <ClInclude Include="src\resource\resource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\resource\Interwebby.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\resource\icon1.ico">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
 </Project>
