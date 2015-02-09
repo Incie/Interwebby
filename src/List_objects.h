@@ -30,6 +30,8 @@ enum DeleteFlags
 
 struct List
 {
+	int CmpAsNumerical(const wxString &s0, const wxString &s1);
+
 	int GetColumnWidth(int columnIndex);
 	void SetColumnWidth(int columnIndex, int columnWidth);
 
@@ -42,8 +44,8 @@ struct List
 	bool isEmpty();
 	bool SetItemColours( int itemid, const wxColour &textColour, const wxColour &bgColour );
 	int GetNextItemId( int previousid );
-	int GetSortStatus(int columnId);
-	bool Sort(int columnId, bool bReverse);
+	int GetSortStatus(int columnId, bool bAsNumerical = false);
+	bool Sort(int columnId, bool bReverse, bool bSortAsNumerical = false);
 	bool SwapItems(int id0, int id1);
 
 	wxListCtrl *list;
