@@ -11,6 +11,11 @@
 
 #include"SettingsDialog.h"
 
+void MainFrame::OnButtonStats(wxCommandEvent& evt)
+{
+	wxMessageBox(listinterface.GetTop5(),"Top 5 Launched");
+}
+
 void MainFrame::OnColumnClick(wxListEvent& evt)
 {
 	listinterface.SortList(GetSelectedDesc(), evt.GetColumn());
@@ -152,7 +157,7 @@ void MainFrame::OnButtonExpand(wxCommandEvent&)
 	{
 		expandBtn->SetLabel(wxT("<<"));
 
-		wxPoint newPosition = entryDownBtn->GetPosition() + wxPoint(3,0);
+		wxPoint newPosition = statsBtn->GetPosition() + wxPoint(3,0);
 		newPosition.x += entryDownBtn->GetSize().x;
 		expandBtn->SetPosition(newPosition);
 
@@ -164,6 +169,8 @@ void MainFrame::OnButtonExpand(wxCommandEvent&)
 		tabRightBtn->Show();
 		entryUpBtn->Show();
 		entryDownBtn->Show();
+		statsBtn->Show();
+
 		return;
 	}
 
@@ -175,6 +182,7 @@ void MainFrame::OnButtonExpand(wxCommandEvent&)
 	tabRightBtn->Show(false);
 	entryUpBtn->Show(false);
 	entryDownBtn->Show(false);
+	statsBtn->Show(false);
 
 	expandBtn->SetLabel(wxT(">>"));
 	expandBtn->SetPosition(newBtn->GetPosition());

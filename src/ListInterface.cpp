@@ -2,6 +2,12 @@
 #include"DataEntry.h"
 #include"DateTime.h"
 #include<wx/listctrl.h>
+#include<algorithm>
+
+bool sortByLaunched( const DataEntry*e0, const DataEntry*e1 )
+{
+	return (e0->GetNumTimesLaunched() > e1->GetNumTimesLaunched());
+}
 
 ListInterface::ListInterface()
 {
@@ -10,6 +16,26 @@ ListInterface::ListInterface()
 ListInterface::~ListInterface()
 {
 	DeleteAll();
+}
+
+wxString ListInterface::GetTop5()
+{
+	std::vector<const DataEntry*> sortedEntries;
+	sortedEntries.reserve( data.size() );
+
+	for( unsigned int i = 0; i < data.size(); ++i )
+		sortedEntries.push_back(data[i]);
+
+
+	std::sort(sortedEntries.begin(), sortedEntries.end(), sortByLaunched);
+
+	wxString top5List = "";
+	for( unsigned int i = 0; i < sortedEntries.size(); ++i )
+	{
+		top5List += wxString::Format<int, wxString, int>(wxT("%i: %s - %i\n"), (i+1),  sortedEntries[i]->GetName(), sortedEntries[i]->GetNumTimesLaunched() );
+	}
+
+	return top5List;
 }
 
 

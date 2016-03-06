@@ -41,6 +41,7 @@ private:
 	void OnButtonEntryUp(wxCommandEvent &evt);
 	void OnButtonEntryDown(wxCommandEvent &evt);
 
+	void OnButtonStats(wxCommandEvent &evt);
 	void OnTextFilter(wxCommandEvent &evt);
 	void OnButtonX(wxCommandEvent &evt);
 	void OnClose(wxCloseEvent &evt);
@@ -74,6 +75,7 @@ private:
 	wxPanel *mainPanel;
 	wxButton *newBtn, *modBtn, *delBtn, *expandBtn, *settingsBtn;
 	wxButton *tabLeftBtn, *tabRightBtn, *entryUpBtn, *entryDownBtn;
+	wxButton *statsBtn;
 
 	wxButton *xbtn;
 	wxTextCtrl *filter;

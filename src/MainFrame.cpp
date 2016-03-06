@@ -79,7 +79,8 @@ MainFrame::MainFrame() : wxFrame(0, wxID_ANY, TITLESTRING)
 		ButtonData(wxT("<< Tab"), wxCommandEventHandler(MainFrame::OnButtonTabLeft), &tabLeftBtn, false),
 		ButtonData(wxT("Tab >>"), wxCommandEventHandler(MainFrame::OnButtonTabRight), &tabRightBtn, false),
 		ButtonData(wxT("Entry ^"), wxCommandEventHandler(MainFrame::OnButtonEntryUp), &entryUpBtn, false),
-		ButtonData(wxT("Entry v"), wxCommandEventHandler(MainFrame::OnButtonEntryDown), &entryDownBtn, false)
+		ButtonData(wxT("Entry v"), wxCommandEventHandler(MainFrame::OnButtonEntryDown), &entryDownBtn, false),
+		ButtonData(wxT("Stats"), wxCommandEventHandler(MainFrame::OnButtonStats), &statsBtn, false)
 	};
 
 	wxPoint pos(0,5);

@@ -58,6 +58,7 @@ public:
 
 	void SortEntriesByGroup();
 
+	wxString GetTop5();
 	wxString GetLastErrorMessage() const { return lastErrorMessage; } 
 	void SetErrorMessage(const wxString &errorMessage) { lastErrorMessage = errorMessage; }
 private:
