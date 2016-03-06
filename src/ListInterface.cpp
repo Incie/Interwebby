@@ -32,7 +32,7 @@ wxString ListInterface::GetTop5()
 	wxString top5List = "";
 	for( unsigned int i = 0; i < sortedEntries.size(); ++i )
 	{
-		top5List += wxString::Format<int, wxString, int>(wxT("%i: %s - %i\n"), (i+1),  sortedEntries[i]->GetName(), sortedEntries[i]->GetNumTimesLaunched() );
+		top5List += wxString::Format<int, wxString, wxString, int>(wxT("%i: %s (%s)- %i\n"), (i+1),  sortedEntries[i]->GetName(), sortedEntries[i]->GetGroup(), sortedEntries[i]->GetNumTimesLaunched() );
 	}
 
 	return top5List;
